@@ -1,1 +1,0 @@
-# sawtooth-sdk-go
