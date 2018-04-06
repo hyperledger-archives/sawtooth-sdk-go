@@ -21,12 +21,12 @@ import (
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/proto"
-	"mocks/mock_messaging"
-	"sawtooth_sdk/messaging"
-	"sawtooth_sdk/processor"
-	"sawtooth_sdk/protobuf/events_pb2"
-	"sawtooth_sdk/protobuf/state_context_pb2"
-	"sawtooth_sdk/protobuf/validator_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/mocks/mock_messaging"
+	"github.com/hyperledger/sawtooth-sdk-go/messaging"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/events_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/state_context_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/validator_pb2"
 	"testing"
 )
 
