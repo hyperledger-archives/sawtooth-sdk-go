@@ -18,9 +18,9 @@
 package signing
 
 // #cgo LDFLAGS: -lcrypto
-// #include "../../../../c/c11_support.h"
-// #include "../../../../c/c11_support.c"
-// #include "../../../../c/loader.c"
+// #include "../c/c11_support.h"
+// #include "../c/c11_support.c"
+// #include "../c/loader.c"
 import "C"
 
 import "fmt"
