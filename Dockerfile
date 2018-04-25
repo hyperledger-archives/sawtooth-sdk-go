@@ -38,7 +38,6 @@ RUN echo "deb http://repo.sawtooth.me/ubuntu/ci xenial universe" >> /etc/apt/sou
     git \
     libssl-dev \
     libzmq3-dev \
-    mockgen \
     openssl \
     protobuf \
     python3 \
@@ -59,6 +58,7 @@ RUN go get -u \
     github.com/golang/protobuf/proto \
     github.com/golang/protobuf/protoc-gen-go \
     github.com/golang/mock/gomock \
+    github.com/golang/mock/mockgen \
     github.com/pebbe/zmq4 \
     github.com/satori/go.uuid
 
