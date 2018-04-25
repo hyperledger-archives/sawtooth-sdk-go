@@ -33,12 +33,11 @@ RUN echo "deb http://repo.sawtooth.me/ubuntu/ci xenial universe" >> /etc/apt/sou
  && echo "deb http://archive.ubuntu.com/ubuntu xenial-backports universe" >> /etc/apt/sources.list \
  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8AA7AF1F1091A5FD \
  && apt-get update \
- && apt-get install -y -q --allow-downgrades \
+ && apt-get install -y -q \
     golang-1.9-go \
     git \
     libssl-dev \
     libzmq3-dev \
-    mockgen \
     openssl \
     protobuf \
     python3 \
@@ -59,11 +58,12 @@ RUN go get -u \
     github.com/golang/protobuf/proto \
     github.com/golang/protobuf/protoc-gen-go \
     github.com/golang/mock/gomock \
+    github.com/golang/mock/mockgen \
     github.com/pebbe/zmq4 \
     github.com/satori/go.uuid
 
-RUN mkdir -p /project/sawtooth-sdk-go/
+RUN mkdir -p /go/src/github.com/hyperledger/sawtooth-sdk-go
 
-WORKDIR /project/sawtooth-sdk-go/
+WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go/
 
 CMD go generate
