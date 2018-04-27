@@ -20,11 +20,11 @@ package processor
 import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
-	zmq "github.com/pebbe/zmq4"
 	"github.com/hyperledger/sawtooth-sdk-go/messaging"
 	"github.com/hyperledger/sawtooth-sdk-go/protobuf/processor_pb2"
 	"github.com/hyperledger/sawtooth-sdk-go/protobuf/transaction_pb2"
 	"github.com/hyperledger/sawtooth-sdk-go/protobuf/validator_pb2"
+	zmq "github.com/pebbe/zmq4"
 )
 
 // The main worker thread finds an appropriate handler and processes the request
