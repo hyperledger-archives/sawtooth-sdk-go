@@ -1,4 +1,6 @@
-# Copyright 2018 Cargill Incorporated
+#!/bin/bash
+#
+# Copyright 2017 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,6 +13,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# ------------------------------------------------------------------------------
 
-ISOLATION_ID=latest
-INSTALL_TYPE=-local
+if [[ -z $1 || -z $2 ]]
+then
+    echo "USAGE: $0 [user] [whitelist]"
+    exit 1
+fi
+
+whitelist=$(cat $2 | grep user | sed 's#.*: \(.*$\)#\1#')
+for user in $whitelist
+do
+    if [[ $user == $1 ]]
+    then
+        echo "SUCCESS: User '$1' whitelisted"
+        exit 0
+    fi
+done
+
+echo "FAILED: User '$1' not whitelisted."
+exit 1

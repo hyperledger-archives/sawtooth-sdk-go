@@ -18,12 +18,12 @@
 #   build_go.
 #
 # Build:
-#   $ cd sawtooth-core/docker
-#   $ docker build . -f sawtooth-dev-go -t sawtooth-dev-go
+#   $ cd sawtooth-sdk-go/docker
+#   $ docker build . -f sawtooth-build-go-protos -t sawtooth-build-go-protos
 #
 # Run:
-#   $ cd sawtooth-core
-#   $ docker run -v $(pwd):/project/sawtooth-core sawtooth-dev-go
+#   $ cd sawtooth-sdk-go
+#   $ docker run -v $(pwd):/project/sawtooth-sdk-go sawtooth-build-go-protos
 
 FROM ubuntu:xenial
 
@@ -34,46 +34,37 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci xenial universe" >>
  && (apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8AA7AF1F1091A5FD \
  || apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 8AA7AF1F1091A5FD) \
  && apt-get update \
- && apt-get install -y -q --allow-downgrades \
-    build-essential \
+ && apt-get install -y -q \
     golang-1.9-go \
     git \
     libssl-dev \
     libzmq3-dev \
     openssl \
-    python3-grpcio-tools=1.1.3-1 \
+    protobuf \
+    python3 \
+    python3-grpcio \
+    python3-grpcio-tools \
+    python3-pkg-resources \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-ENV GOPATH=/go:/project/sawtooth-core/sdk/go:/project/sawtooth-core/sdk/examples/intkey_go:/project/sawtooth-core/sdk/examples/noop_go:/project/sawtooth-core/sdk/examples/xo_go
+ENV GOPATH=/go
 
-ENV PATH=$PATH:/project/sawtooth-core/bin:/go/bin:/usr/lib/go-1.9/bin
+ENV PATH=$PATH:/go/bin:/usr/lib/go-1.9/bin
 
 RUN mkdir /go
 
 RUN go get -u \
+    github.com/btcsuite/btcd/btcec \
     github.com/golang/protobuf/proto \
     github.com/golang/protobuf/protoc-gen-go \
-    github.com/pebbe/zmq4 \
-    github.com/brianolson/cbor_go \
-    github.com/satori/go.uuid \
-    github.com/btcsuite/btcd/btcec \
-    github.com/jessevdk/go-flags \
-    github.com/pelletier/go-toml \
     github.com/golang/mock/gomock \
     github.com/golang/mock/mockgen \
-    golang.org/x/crypto/ripemd160 \
-    golang.org/x/crypto/ssh/terminal \
-    gopkg.in/fatih/set.v0
+    github.com/pebbe/zmq4 \
+    github.com/satori/go.uuid
 
-EXPOSE 4004/tcp
+RUN mkdir -p /go/src/github.com/hyperledger/sawtooth-sdk-go
 
-RUN mkdir -p /project/sawtooth-core/ \
- && mkdir -p /var/log/sawtooth \
- && mkdir -p /var/lib/sawtooth \
- && mkdir -p /etc/sawtooth \
- && mkdir -p /etc/sawtooth/keys
+WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go/
 
-WORKDIR /
-
-CMD build_go && build_smallbank_go
+CMD go generate
