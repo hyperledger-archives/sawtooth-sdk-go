@@ -20,8 +20,8 @@ package main
 import (
 	"flag"
 	noop "sawtooth_noop/handler"
-	"sawtooth_sdk/logging"
-	"sawtooth_sdk/processor"
+	"github.com/hyperledger/sawtooth-sdk-go/logging"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	"syscall"
 )
 

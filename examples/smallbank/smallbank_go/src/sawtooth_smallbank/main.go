@@ -19,8 +19,8 @@ package main
 import (
 	flags "github.com/jessevdk/go-flags"
 	"os"
-	"sawtooth_sdk/logging"
-	"sawtooth_sdk/processor"
+	"github.com/hyperledger/sawtooth-sdk-go/logging"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	smallbank "sawtooth_smallbank/handler"
 	"syscall"
 )

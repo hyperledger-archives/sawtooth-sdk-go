@@ -22,7 +22,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
-	"sawtooth_sdk/processor"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	"sort"
 	"strings"
 )

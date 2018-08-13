@@ -20,9 +20,9 @@ package handler
 import (
 	"crypto/sha512"
 	"encoding/hex"
-	"sawtooth_sdk/logging"
-	"sawtooth_sdk/processor"
-	"sawtooth_sdk/protobuf/processor_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/logging"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/processor_pb2"
 	"strings"
 )
 

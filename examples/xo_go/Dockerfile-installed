@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# docker build -f sdk/examples/xo_go/Dockerfile-installed -t sawtooth-xo-tp-go .
+# docker build -f examples/xo_go/Dockerfile-installed -t sawtooth-xo-tp-go .
 
 # -------------=== xo-tp-go build ===-------------
 
@@ -36,7 +36,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci xenial universe" >>
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-ENV GOPATH=/go:/project/sdk/go:/project/sdk/examples/xo_go
+ENV GOPATH=/go:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go
 
 ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.9/bin
 
@@ -56,22 +56,22 @@ RUN go get -u \
     golang.org/x/crypto/ripemd160 \
     golang.org/x/crypto/ssh
 
-COPY . /project
+COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 
-WORKDIR /project
+WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go
 
 RUN go generate \
- && cd sdk/examples/xo_go \
+ && cd examples/xo_go \
  && if [ -d "bin" ]; then rm -rf bin; fi \
  && mkdir bin \
  && cd src/sawtooth_xo \
- && go build -o /project/sdk/examples/xo_go/bin/xo-tp-go
+ && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go/bin/xo-tp-go
 
 RUN pkg=xo_go \
  && GO_TP_DASH=$(echo $pkg | sed s/_/-/) \
  && CHANGELOG_DIR="debian/usr/share/doc/sawtooth-tp-$GO_TP_DASH" \
  && ST_VERSION=$(bin/get_version) \
- && cd sdk/examples/$pkg \
+ && cd examples/$pkg \
  && if [ -d "debian" ]; then rm -rf debian; fi \
  && mkdir -p debian/DEBIAN \
  && mkdir -p $CHANGELOG_DIR \
@@ -100,7 +100,7 @@ RUN pkg=xo_go \
 
 FROM ubuntu:xenial
 
-COPY --from=xo-tp-go-builder /project/sdk/examples/xo_go/sawtooth-xo-tp-go_*.deb /tmp
+COPY --from=xo-tp-go-builder /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go/sawtooth-xo-tp-go_*.deb /tmp
 
 RUN apt-get update \
  && dpkg -i /tmp/sawtooth-*.deb || true \

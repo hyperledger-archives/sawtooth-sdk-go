@@ -19,7 +19,7 @@ package xo_payload
 
 import (
 	"fmt"
-	"sawtooth_sdk/processor"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	"strconv"
 	"strings"
 )

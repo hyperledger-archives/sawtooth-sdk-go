@@ -22,8 +22,8 @@ import (
 	flags "github.com/jessevdk/go-flags"
 	"os"
 	intkey "sawtooth_intkey/handler"
-	"sawtooth_sdk/logging"
-	"sawtooth_sdk/processor"
+	"github.com/hyperledger/sawtooth-sdk-go/logging"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	"syscall"
 )
 

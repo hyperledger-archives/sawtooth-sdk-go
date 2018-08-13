@@ -20,8 +20,8 @@ import (
 	"fmt"
 	flags "github.com/jessevdk/go-flags"
 	"os"
-	"sawtooth_sdk/logging"
-	"sawtooth_sdk/processor"
+	"github.com/hyperledger/sawtooth-sdk-go/logging"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	xo "sawtooth_xo/handler"
 	"syscall"
 )
