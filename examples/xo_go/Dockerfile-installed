@@ -60,7 +60,7 @@ COPY . /project
 
 WORKDIR /project
 
-RUN bin/protogen go \
+RUN go generate \
  && cd sdk/examples/xo_go \
  && if [ -d "bin" ]; then rm -rf bin; fi \
  && mkdir bin \
