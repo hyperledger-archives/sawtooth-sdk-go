@@ -19,11 +19,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/hyperledger/sawtooth-sdk-go/logging"
+	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	flags "github.com/jessevdk/go-flags"
 	"os"
 	intkey "sawtooth_intkey/handler"
-	"github.com/hyperledger/sawtooth-sdk-go/logging"
-	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	"syscall"
 )
 

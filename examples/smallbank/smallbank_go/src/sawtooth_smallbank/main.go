@@ -17,10 +17,10 @@
 package main
 
 import (
-	flags "github.com/jessevdk/go-flags"
-	"os"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	"github.com/hyperledger/sawtooth-sdk-go/processor"
+	flags "github.com/jessevdk/go-flags"
+	"os"
 	smallbank "sawtooth_smallbank/handler"
 	"syscall"
 )

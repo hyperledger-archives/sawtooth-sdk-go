@@ -18,10 +18,10 @@ package main
 
 import (
 	"fmt"
-	flags "github.com/jessevdk/go-flags"
-	"os"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	"github.com/hyperledger/sawtooth-sdk-go/processor"
+	flags "github.com/jessevdk/go-flags"
+	"os"
 	xo "sawtooth_xo/handler"
 	"syscall"
 )
