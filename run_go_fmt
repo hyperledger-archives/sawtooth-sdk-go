@@ -25,6 +25,14 @@ $top_dir/messaging
 $top_dir/processor
 $top_dir/signing
 $top_dir/tests
+$top_dir/examples/intkey_go/src/sawtooth_intkey
+$top_dir/examples/intkey_go/src/sawtooth_intkey/handler
+$top_dir/examples/noop_go/src/sawtooth_noop
+$top_dir/examples/noop_go/src/sawtooth_noop/handler
+$top_dir/examples/smallbank/smallbank_go/src/sawtooth_smallbank
+$top_dir/examples/smallbank/smallbank_go/src/sawtooth_smallbank/handler
+$top_dir/examples/xo_go/src/sawtooth_xo
+$top_dir/examples/xo_go/src/sawtooth_xo/handler
 "
 
 exitcode=0
