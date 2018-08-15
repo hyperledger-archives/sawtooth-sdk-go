@@ -25,6 +25,7 @@ node ('master') {
     ws("workspace/${env.BUILD_TAG}") {
         stage("Clone Repo") {
             checkout scm
+            sh 'git fetch --tag'
         }
 
         if (!(env.BRANCH_NAME == 'master' && env.JOB_BASE_NAME == 'master')) {
@@ -66,6 +67,7 @@ node ('master') {
         stage("Build Test Dependencies") {
             sh 'docker build . -t sawtooth-sdk-go:$ISOLATION_ID'
             sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID'
+            sh 'docker-compose -f docker-compose-installed.yaml build'
         }
 
         stage("Run Lint") {
@@ -75,6 +77,16 @@ node ('master') {
         // Run the tests
         stage("Run Tests") {
             sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID bash -c "cd tests && go test"'
+            sh 'CORE=$(pwd) docker-compose -f tests/test_systemd_services.yaml up --abort-on-container-exit'
+            sh 'docker-compose -f examples/intkey_go/tests/test_intkey_smoke_go.yaml up --abort-on-container-exit'
+            sh 'docker-compose -f examples/intkey_go/tests/test_tp_intkey_go.yaml up --abort-on-container-exit'
+            sh 'docker-compose -f examples/xo_go/tests/test_xo_smoke_go.yaml up --abort-on-container-exit'
+            sh 'docker-compose -f examples/xo_go/tests/test_tp_xo_go.yaml up --abort-on-container-exit'
+        }
+        stage("Archive Build artifacts") {
+            sh 'mkdir -p build/debs && docker-compose -f docker/compose/copy-debs.yaml up'
+            sh 'docker-compose -f docker/compose/copy-debs.yaml down'
+            archiveArtifacts artifacts: 'build/debs/*.deb'
         }
     }
 }
