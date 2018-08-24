@@ -26,7 +26,7 @@ from grpc.tools.protoc import main as _protoc
 
 
 JOIN = os.path.join
-TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+TOP_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def protoc_go(src_dir, base_dir, pkg):
@@ -78,7 +78,10 @@ def fix_import(contents, pkg, sub_dir=False):
 
 
 def main():
-    protoc_go("protos", "sawtooth-sdk-go/", "protobuf")
+    protoc_go("protos", "./", "protobuf")
+    protoc_go("examples/smallbank/protos",
+              "examples/smallbank/smallbank_go/src",
+              "protobuf")
 
 
 if __name__ == "__main__":
