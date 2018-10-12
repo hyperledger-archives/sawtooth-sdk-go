@@ -19,6 +19,7 @@ package processor
 
 import (
 	"fmt"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/sawtooth-sdk-go/messaging"
 	"github.com/hyperledger/sawtooth-sdk-go/protobuf/processor_pb2"
@@ -132,7 +133,7 @@ func findHandler(handlers []TransactionHandler, header *transaction_pb2.Transact
 		}
 
 		if !HasVersion {
-			break
+			continue
 		}
 
 		return handler, nil
