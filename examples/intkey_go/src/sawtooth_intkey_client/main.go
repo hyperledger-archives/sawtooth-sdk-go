@@ -18,10 +18,15 @@
 package main
 
 import (
+	"crypto/sha512"
+	"encoding/hex"
 	"fmt"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	flags "github.com/jessevdk/go-flags"
 	"os"
+	"os/user"
+	"path"
+	"strings"
 )
 
 // All subcommands implement this interface
@@ -38,13 +43,21 @@ type Opts struct {
 	Version bool   `short:"V" long:"version" description:"Display version information"`
 }
 
+var DISTRIBUTION_VERSION string
+
 var logger *logging.Logger = logging.Get()
+
+func init() {
+	if len(DISTRIBUTION_VERSION) == 0 {
+		DISTRIBUTION_VERSION = "Unknown"
+	}
+}
 
 func main() {
 	arguments := os.Args[1:]
 	for _, arg := range arguments {
 		if arg == "-V" || arg == "--version" {
-			fmt.Println(DISTRIBUTION_NAME + " (Hyperledger Sawtooth) version " + FAMILY_VERSION)
+			fmt.Println(DISTRIBUTION_NAME + " (Hyperledger Sawtooth) version " + DISTRIBUTION_VERSION)
 			os.Exit(0)
 		}
 	}
@@ -110,4 +123,39 @@ func main() {
 	}
 
 	fmt.Println("Error: Command not found: ", name)
+}
+
+func Sha512HashValue(value string) string {
+	hashHandler := sha512.New()
+	hashHandler.Write([]byte(value))
+	return strings.ToLower(hex.EncodeToString(hashHandler.Sum(nil)))
+}
+
+func GetClient(args Command, readFile bool) (IntkeyClient, error) {
+	url := args.UrlPassed()
+	if url == "" {
+		url = DEFAULT_URL
+	}
+	keyfile := ""
+	if readFile {
+		var err error
+		keyfile, err = GetKeyfile(args.KeyfilePassed())
+		if err != nil {
+			return IntkeyClient{}, err
+		}
+	}
+	return NewIntkeyClient(url, keyfile)
+}
+
+func GetKeyfile(keyfile string) (string, error) {
+	if keyfile == "" {
+		username, err := user.Current()
+		if err != nil {
+			return "", err
+		}
+		return path.Join(
+			username.HomeDir, ".sawtooth", "keys", username.Username+".priv"), nil
+	} else {
+		return keyfile, nil
+	}
 }
