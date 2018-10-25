@@ -19,7 +19,7 @@ services:
   smallbank-tp-go:
     build:
       context: .
-      dockerfile: examples/smallbank/smallbank_go/Dockerfile-installed
+      dockerfile: examples/smallbank/smallbank_go/Dockerfile-installed-${DISTRO}
       args:
         - http_proxy
         - https_proxy
@@ -30,7 +30,7 @@ services:
   sawtooth-intkey-tp-go:
     build:
       context: .
-      dockerfile: examples/intkey_go/Dockerfile-installed
+      dockerfile: examples/intkey_go/Dockerfile-installed-${DISTRO}
       args:
         - http_proxy
         - https_proxy
@@ -41,7 +41,7 @@ services:
   sawtooth-noop-tp-go:
     build:
       context: .
-      dockerfile: examples/noop_go/Dockerfile-installed
+      dockerfile: examples/noop_go/Dockerfile-installed-${DISTRO}
       args:
         - http_proxy
         - https_proxy
@@ -52,7 +52,7 @@ services:
   sawtooth-xo-tp-go:
     build:
       context: .
-      dockerfile: examples/xo_go/Dockerfile-installed
+      dockerfile: examples/xo_go/Dockerfile-installed-${DISTRO}
       args:
         - http_proxy
         - https_proxy

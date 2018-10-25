@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# docker build -f examples/xo_go/Dockerfile-installed -t sawtooth-xo-tp-go .
+# docker build -f examples/noop_go/Dockerfile-installed-xenial -t sawtooth-noop-tp-go .
 
-# -------------=== xo-tp-go build ===-------------
+# -------------=== noop-tp-go build ===-------------
 
-FROM ubuntu:xenial as xo-tp-go-builder
+FROM ubuntu:xenial as noop-tp-go-builder
 
 ENV VERSION=AUTO_STRICT
 
@@ -36,7 +36,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci xenial universe" >>
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-ENV GOPATH=/go:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go
+ENV GOPATH=/go:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/noop_go/
 
 ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.9/bin
 
@@ -61,13 +61,13 @@ COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go
 
 RUN go generate \
- && cd examples/xo_go \
+ && cd examples/noop_go \
  && if [ -d "bin" ]; then rm -rf bin; fi \
  && mkdir bin \
- && cd src/sawtooth_xo \
- && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go/bin/xo-tp-go
+ && cd src/sawtooth_noop \
+ && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/noop_go/bin/noop-tp-go
 
-RUN pkg=xo_go \
+RUN pkg=noop_go \
  && GO_TP_DASH=$(echo $pkg | sed s/_/-/) \
  && CHANGELOG_DIR="debian/usr/share/doc/sawtooth-tp-$GO_TP_DASH" \
  && ST_VERSION=$(bin/get_version) \
@@ -96,14 +96,14 @@ RUN pkg=xo_go \
  && echo -- \
  && mv debian.deb "${PACKAGENAME}_${PACKAGEVERSION}_${PACKAGEARCH}.deb"
 
-# -------------=== sawtooth-xo-tp-go build ===-------------
+# -------------=== sawtooth-noop-tp-go build ===-------------
 
 FROM ubuntu:xenial
 
-COPY --from=xo-tp-go-builder /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go/sawtooth-xo-tp-go_*.deb /tmp
+COPY --from=noop-tp-go-builder /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/noop_go/sawtooth-noop-tp-go_*.deb /tmp
 
 RUN apt-get update \
  && dpkg -i /tmp/sawtooth-*.deb || true \
  && apt-get -f -y install
 
-CMD ["xo-tp-go", "-vv"]
+CMD ["noop-tp-go", "-vv"]
