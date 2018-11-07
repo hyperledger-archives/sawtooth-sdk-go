@@ -13,9 +13,12 @@
 # limitations under the License.
 
 
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
-RUN echo "deb http://repo.sawtooth.me/ubuntu/nightly xenial universe" >> /etc/apt/sources.list \
+RUN apt-get update \
+ && apt-get install gnupg -y
+
+RUN echo "deb http://repo.sawtooth.me/ubuntu/nightly bionic universe" >> /etc/apt/sources.list \
  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 44FC67F19B2466EA \
  && apt-get update
 

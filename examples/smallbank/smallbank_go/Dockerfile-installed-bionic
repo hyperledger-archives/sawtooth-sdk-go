@@ -12,31 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# docker build -f examples/xo_go/Dockerfile-installed -t sawtooth-xo-tp-go .
+# docker build -f examples/smallbank/smallbank_go/Dockerfile-installed-bionic -t sawtooth-smallbank-tp-go .
 
-# -------------=== xo-tp-go build ===-------------
+# -------------=== smallbank-tp-go build ===-------------
 
-FROM ubuntu:xenial as xo-tp-go-builder
+FROM ubuntu:bionic as smallbank-tp-go-builder
 
 ENV VERSION=AUTO_STRICT
 
-RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci xenial universe" >> /etc/apt/sources.list \
- && echo "deb http://archive.ubuntu.com/ubuntu xenial-backports universe" >> /etc/apt/sources.list \
+RUN apt-get update \
+ && apt-get install gnupg -y
+
+RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci bionic universe" >> /etc/apt/sources.list \
+ && echo "deb http://archive.ubuntu.com/ubuntu bionic-backports universe" >> /etc/apt/sources.list \
  && (apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 8AA7AF1F1091A5FD \
  || apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 8AA7AF1F1091A5FD) \
  && apt-get update \
- && apt-get install -y -q --allow-downgrades \
+ && apt-get install -y -q \
     build-essential \
     golang-1.9-go \
     git \
     libssl-dev \
     libzmq3-dev \
     openssl \
-    python3-grpcio-tools=1.1.3-1 \
+    python3-grpcio-tools \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-ENV GOPATH=/go:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go
+ENV GOPATH=/go:/project/:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/
 
 ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.9/bin
 
@@ -61,17 +64,17 @@ COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go
 
 RUN go generate \
- && cd examples/xo_go \
+ && cd examples/smallbank/smallbank_go \
  && if [ -d "bin" ]; then rm -rf bin; fi \
  && mkdir bin \
- && cd src/sawtooth_xo \
- && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go/bin/xo-tp-go
+ && cd src/sawtooth_smallbank \
+ && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/bin/smallbank-tp-go
 
-RUN pkg=xo_go \
+RUN pkg=smallbank \
  && GO_TP_DASH=$(echo $pkg | sed s/_/-/) \
  && CHANGELOG_DIR="debian/usr/share/doc/sawtooth-tp-$GO_TP_DASH" \
  && ST_VERSION=$(bin/get_version) \
- && cd examples/$pkg \
+ && cd examples/smallbank/smallbank_go \
  && if [ -d "debian" ]; then rm -rf debian; fi \
  && mkdir -p debian/DEBIAN \
  && mkdir -p $CHANGELOG_DIR \
@@ -96,14 +99,18 @@ RUN pkg=xo_go \
  && echo -- \
  && mv debian.deb "${PACKAGENAME}_${PACKAGEVERSION}_${PACKAGEARCH}.deb"
 
-# -------------=== sawtooth-xo-tp-go build ===-------------
+# -------------=== sawtooth-smallbank-tp-go build ===-------------
 
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
-COPY --from=xo-tp-go-builder /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go/sawtooth-xo-tp-go_*.deb /tmp
+RUN apt-get update \
+ && apt-get install -y \
+ systemd
+
+COPY --from=smallbank-tp-go-builder /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/sawtooth-smallbank-tp-go_*.deb /tmp
 
 RUN apt-get update \
  && dpkg -i /tmp/sawtooth-*.deb || true \
  && apt-get -f -y install
 
-CMD ["xo-tp-go", "-vv"]
+CMD ["smallbank-tp-go", "-vv"]

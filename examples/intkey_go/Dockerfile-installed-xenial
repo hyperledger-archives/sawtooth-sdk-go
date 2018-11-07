@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# docker build -f examples/smallbank/smallbank_go/Dockerfile-installed -t sawtooth-smallbank-tp-go .
+# docker build -f examples/intkey_go/Dockerfile-installed-xenial -t sawtooth-intkey-tp-go .
 
-# -------------=== smallbank-tp-go build ===-------------
+# -------------=== intkey-tp-go build ===-------------
 
-FROM ubuntu:xenial as smallbank-tp-go-builder
+FROM ubuntu:xenial as intkey-tp-go-builder
 
 ENV VERSION=AUTO_STRICT
 
@@ -36,7 +36,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci xenial universe" >>
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-ENV GOPATH=/go:/project/:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/
+ENV GOPATH=/go:/go/src/github.com/hyperledger/sawtooth-sdk-go/:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/intkey_go
 
 ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.9/bin
 
@@ -61,17 +61,17 @@ COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go
 
 RUN go generate \
- && cd examples/smallbank/smallbank_go \
+ && cd examples/intkey_go \
  && if [ -d "bin" ]; then rm -rf bin; fi \
  && mkdir bin \
- && cd src/sawtooth_smallbank \
- && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/bin/smallbank-tp-go
+ && cd src/sawtooth_intkey \
+ && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/intkey_go/bin/intkey-tp-go
 
-RUN pkg=smallbank \
+RUN pkg=intkey_go \
  && GO_TP_DASH=$(echo $pkg | sed s/_/-/) \
  && CHANGELOG_DIR="debian/usr/share/doc/sawtooth-tp-$GO_TP_DASH" \
  && ST_VERSION=$(bin/get_version) \
- && cd examples/smallbank/smallbank_go \
+ && cd examples/$pkg \
  && if [ -d "debian" ]; then rm -rf debian; fi \
  && mkdir -p debian/DEBIAN \
  && mkdir -p $CHANGELOG_DIR \
@@ -96,14 +96,14 @@ RUN pkg=smallbank \
  && echo -- \
  && mv debian.deb "${PACKAGENAME}_${PACKAGEVERSION}_${PACKAGEARCH}.deb"
 
-# -------------=== sawtooth-smallbank-tp-go build ===-------------
+# -------------=== sawtooth-intkey-tp-go build ===-------------
 
 FROM ubuntu:xenial
 
-COPY --from=smallbank-tp-go-builder /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/sawtooth-smallbank-tp-go_*.deb /tmp
+COPY --from=intkey-tp-go-builder /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/intkey_go/sawtooth-intkey-tp-go_*.deb /tmp
 
 RUN apt-get update \
  && dpkg -i /tmp/sawtooth-*.deb || true \
  && apt-get -f -y install
 
-CMD ["smallbank-tp-go", "-vv"]
+CMD ["intkey-tp-go", "-vv"]
