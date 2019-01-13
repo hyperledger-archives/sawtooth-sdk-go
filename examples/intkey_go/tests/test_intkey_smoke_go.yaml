@@ -38,6 +38,7 @@ services:
     image: hyperledger/sawtooth-validator
     expose:
       - 4004
+      - 5050
     command: "bash -c \"\
         sawadm keygen && \
         sawset genesis \
@@ -48,7 +49,7 @@ services:
             --endpoint tcp://validator:8800 \
             --bind component:tcp://eth0:4004 \
             --bind network:tcp://eth0:8800 \
-            --bind consensus:tcp://eth0:5005 \
+            --bind consensus:tcp://eth0:5050 \
     \""
     stop_signal: SIGKILL
 
@@ -60,6 +61,15 @@ services:
     depends_on:
       - validator
     command: sawtooth-rest-api -v --connect tcp://validator:4004 --bind rest-api:8008
+    stop_signal: SIGKILL
+
+  devmode-rust-engine:
+    image: hyperledger/sawtooth-devmode-engine-rust
+    expose:
+      - 5050
+    depends_on:
+      - validator
+    command: devmode-engine-rust -v --connect tcp://validator:5050
     stop_signal: SIGKILL
 
   test-intkey-smoke-go:
