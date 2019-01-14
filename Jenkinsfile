@@ -30,8 +30,8 @@ node ('master') {
 
         if (!(env.BRANCH_NAME == 'master' && env.JOB_BASE_NAME == 'master')) {
             stage("Check Whitelist") {
-                readTrusted 'whitelist'
-                sh './whitelist "$CHANGE_AUTHOR" /etc/jenkins-authorized-builders'
+                readTrusted 'bin/whitelist'
+                sh './bin/whitelist "$CHANGE_AUTHOR" /etc/jenkins-authorized-builders'
             }
         }
 
