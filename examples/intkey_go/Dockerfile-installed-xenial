@@ -54,7 +54,8 @@ RUN go get -u \
     github.com/golang/mock/gomock \
     github.com/golang/mock/mockgen \
     golang.org/x/crypto/ripemd160 \
-    golang.org/x/crypto/ssh
+    golang.org/x/crypto/ssh \
+    gopkg.in/yaml.v2
 
 COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 
@@ -65,7 +66,11 @@ RUN go generate \
  && if [ -d "bin" ]; then rm -rf bin; fi \
  && mkdir bin \
  && cd src/sawtooth_intkey \
- && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/intkey_go/bin/intkey-tp-go
+ && go build -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/intkey_go/bin/intkey-tp-go \
+ && cd ../sawtooth_intkey_client \
+ && ST_VERSION=$(/go/src/github.com/hyperledger/sawtooth-sdk-go/bin/get_version) \
+ && go build -ldflags "-X main.DISTRIBUTION_VERSION=${ST_VERSION}" -o /go/src/github.com/hyperledger/sawtooth-sdk-go/examples/intkey_go/bin/intkey-go \
+ && cd ../sawtooth_intkey
 
 RUN pkg=intkey_go \
  && GO_TP_DASH=$(echo $pkg | sed s/_/-/) \
