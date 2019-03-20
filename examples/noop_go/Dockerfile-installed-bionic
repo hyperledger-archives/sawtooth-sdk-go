@@ -30,7 +30,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci bionic universe" >>
  && apt-get update \
  && apt-get install -y -q \
     build-essential \
-    golang-1.9-go \
+    golang-1.10-go \
     git \
     libssl-dev \
     libzmq3-dev \
@@ -41,7 +41,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci bionic universe" >>
 
 ENV GOPATH=/go:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/noop_go/
 
-ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.9/bin
+ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.10/bin
 
 RUN mkdir /go
 
