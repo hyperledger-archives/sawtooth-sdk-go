@@ -20,7 +20,7 @@ services:
   xo-tp-go:
     build:
       context: ../../..
-      dockerfile: examples/xo_go/Dockerfile-installed
+      dockerfile: examples/xo_go/Dockerfile-installed-${DISTRO}
     image: sawtooth-xo-tp-go:$ISOLATION_ID
     command: xo-tp-go -vv -C tcp://test-xo-tp-go:4004
     stop_signal: SIGKILL

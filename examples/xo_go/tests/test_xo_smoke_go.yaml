@@ -30,7 +30,7 @@ services:
     image: sawtooth-xo-tp-go:$ISOLATION_ID
     build:
       context: ../../..
-      dockerfile: examples/xo_go/Dockerfile-installed
+      dockerfile: examples/xo_go/Dockerfile-installed-${DISTRO}
     expose:
       - 4004
     depends_on:
