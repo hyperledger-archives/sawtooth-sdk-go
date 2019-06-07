@@ -84,6 +84,6 @@ services:
       - settings-tp
     command: nose2-3
         -v
-        -s /usr/lib/python3/dist-packages/sawtooth_integration/tests/
+        -s /data/tests/intkey
         test_intkey_smoke.TestIntkeySmoke
     stop_signal: SIGKILL

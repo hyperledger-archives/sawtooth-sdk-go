@@ -89,6 +89,6 @@ services:
       - settings-tp
     command: nose2-3
         -v
-        -s /usr/lib/python3/dist-packages/sawtooth_integration/tests/
+        -s /data/tests/xo
         test_xo_smoke.TestXoSmoke
     stop_signal: SIGKILL
