@@ -25,8 +25,7 @@ RUN echo "deb http://repo.sawtooth.me/ubuntu/nightly bionic universe" >> /etc/ap
 RUN apt-get install -y -q \
     python3-sawtooth-integration \
     python3-sawtooth-intkey-tests \
-    python3-sawtooth-sdk \
-    python3-sawtooth-signing
+    python3-sawtooth-sdk
 
 RUN apt-get install -y -q --allow-downgrades \
     git \
