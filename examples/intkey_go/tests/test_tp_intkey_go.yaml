@@ -20,7 +20,7 @@ services:
   intkey-tp-go:
     build:
       context: ../../..
-      dockerfile: examples/intkey_go/Dockerfile-installed
+      dockerfile: examples/intkey_go/Dockerfile-installed-${DISTRO}
     image: sawtooth-intkey-tp-go:$ISOLATION_ID
     command: intkey-tp-go -vv -C tcp://test-intkey-tp-go:4004
     stop_signal: SIGKILL

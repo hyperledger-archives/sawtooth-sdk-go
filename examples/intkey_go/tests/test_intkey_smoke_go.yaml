@@ -28,7 +28,7 @@ services:
     image: sawtooth-intkey-tp-go:$ISOLATION_ID
     build:
       context: ../../..
-      dockerfile: examples/intkey_go/Dockerfile-installed
+      dockerfile: examples/intkey_go/Dockerfile-installed-${DISTRO}
     depends_on:
       - validator
     command: intkey-tp-go -v -C tcp://validator:4004
@@ -84,6 +84,6 @@ services:
       - settings-tp
     command: nose2-3
         -v
-        -s /usr/lib/python3/dist-packages/sawtooth_integration/tests/
+        -s /data/tests/intkey
         test_intkey_smoke.TestIntkeySmoke
     stop_signal: SIGKILL

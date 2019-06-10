@@ -30,7 +30,7 @@ services:
     image: sawtooth-xo-tp-go:$ISOLATION_ID
     build:
       context: ../../..
-      dockerfile: examples/xo_go/Dockerfile-installed
+      dockerfile: examples/xo_go/Dockerfile-installed-${DISTRO}
     expose:
       - 4004
     depends_on:
@@ -89,6 +89,6 @@ services:
       - settings-tp
     command: nose2-3
         -v
-        -s /usr/lib/python3/dist-packages/sawtooth_integration/tests/
+        -s /data/tests/xo
         test_xo_smoke.TestXoSmoke
     stop_signal: SIGKILL

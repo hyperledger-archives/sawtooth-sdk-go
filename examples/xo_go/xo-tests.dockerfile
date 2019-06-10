@@ -26,7 +26,6 @@ RUN apt-get install -y -q \
     python3-sawtooth-cli \
     python3-sawtooth-integration \
     python3-sawtooth-sdk \
-    python3-sawtooth-signing \
     python3-sawtooth-xo-tests
 
 RUN apt-get install -y -q --allow-downgrades \
