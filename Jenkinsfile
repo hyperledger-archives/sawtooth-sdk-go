@@ -15,78 +15,119 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-// Discard old builds after 31 days
-properties([[$class: 'BuildDiscarderProperty', strategy:
-        [$class: 'LogRotator', artifactDaysToKeepStr: '',
-        artifactNumToKeepStr: '', daysToKeepStr: '31', numToKeepStr: '']]]);
-
-node ('master') {
-    // Create a unique workspace so Jenkins doesn't reuse an existing one
-    ws("workspace/${env.BUILD_TAG}") {
-        stage("Clone Repo") {
-            checkout scm
-            sh 'git fetch --tag'
+pipeline {
+    agent {
+        node {
+            label 'master'
+            customWorkspace "workspace/${env.BUILD_TAG}"
         }
+    }
 
-        if (!(env.BRANCH_NAME == 'master' && env.JOB_BASE_NAME == 'master')) {
-            stage("Check Whitelist") {
+    triggers {
+        cron(env.BRANCH_NAME == 'master' ? 'H 3 * * *' : '')
+    }
+
+    options {
+        timestamps()
+        buildDiscarder(logRotator(daysToKeepStr: '31'))
+    }
+
+    environment {
+        ISOLATION_ID = sh(returnStdout: true, script: 'printf $BUILD_TAG | sha256sum | cut -c1-64').trim()
+        COMPOSE_PROJECT_NAME = sh(returnStdout: true, script: 'printf $BUILD_TAG | sha256sum | cut -c1-64').trim()
+    }
+
+    stages {
+        stage('Check Whitelist') {
+            steps {
                 readTrusted 'whitelist'
                 sh './whitelist "$CHANGE_AUTHOR" /etc/jenkins-authorized-builders'
             }
+            when {
+                not {
+                    branch 'master'
+                }
+            }
         }
 
-        stage("Check for Signed-Off Commits") {
-            sh '''#!/bin/bash -l
-                if [ -v CHANGE_URL ] ;
-                then
-                    temp_url="$(echo $CHANGE_URL |sed s#github.com/#api.github.com/repos/#)/commits"
-                    pull_url="$(echo $temp_url |sed s#pull#pulls#)"
-
-                    IFS=$'\n'
-                    for m in $(curl -s "$pull_url" | grep "message") ; do
-                        if echo "$m" | grep -qi signed-off-by:
-                        then
-                          continue
-                        else
-                          echo "FAIL: Missing Signed-Off Field"
-                          echo "$m"
-                          exit 1
-                        fi
-                    done
-                    unset IFS;
-                fi
-            '''
+        stage('Check for Signed-Off Commits') {
+            steps {
+                sh '''#!/bin/bash -l
+                    if [ -v CHANGE_URL ] ;
+                    then
+                        temp_url="$(echo $CHANGE_URL |sed s#github.com/#api.github.com/repos/#)/commits"
+                        pull_url="$(echo $temp_url |sed s#pull#pulls#)"
+                        IFS=$'\n'
+                        for m in $(curl -s "$pull_url" | grep "message") ; do
+                            if echo "$m" | grep -qi signed-off-by:
+                            then
+                              continue
+                            else
+                              echo "FAIL: Missing Signed-Off Field"
+                              echo "$m"
+                              exit 1
+                            fi
+                        done
+                        unset IFS;
+                    fi
+                '''
+            }
         }
 
-        // Set the ISOLATION_ID environment variable for the whole pipeline
-        env.ISOLATION_ID = sh(returnStdout: true, script: 'printf $BUILD_TAG | sha256sum | cut -c1-64').trim()
-        env.COMPOSE_PROJECT_NAME = sh(returnStdout: true, script: 'printf $BUILD_TAG | sha256sum | cut -c1-64').trim()
-
-        // Use a docker container to build and protogen, so that the Jenkins
-        // environment doesn't need all the dependencies.
-        stage("Build Test Dependencies") {
-            sh 'docker build . -t sawtooth-sdk-go:$ISOLATION_ID'
-            sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID'
-            sh 'docker-compose -f docker-compose-installed.yaml build'
+        stage('Fetch Tags') {
+            steps {
+                sh 'git fetch --tag'
+            }
         }
 
-        stage("Run Lint") {
-            sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID ./run_go_fmt'
+        stage('Build Test Dependencies') {
+            steps {
+                sh 'docker build . -t sawtooth-sdk-go:$ISOLATION_ID'
+                sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID'
+                sh 'docker-compose -f docker-compose-installed.yaml build'
+            }
         }
 
-        // Run the tests
-        stage("Run Tests") {
-            sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID bash -c "cd tests && go test"'
-            sh 'CORE=$(pwd) docker-compose -f tests/test_systemd_services.yaml up --abort-on-container-exit'
-            sh 'docker-compose -f examples/intkey_go/tests/test_intkey_smoke_go.yaml up --abort-on-container-exit'
-            sh 'docker-compose -f examples/intkey_go/tests/test_tp_intkey_go.yaml up --abort-on-container-exit'
-            sh 'docker-compose -f examples/xo_go/tests/test_xo_smoke_go.yaml up --abort-on-container-exit'
-            sh 'docker-compose -f examples/xo_go/tests/test_tp_xo_go.yaml up --abort-on-container-exit'
+        stage('Run Lint') {
+            steps {
+                sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID ./run_go_fmt'
+            }
         }
-        stage("Archive Build artifacts") {
-            sh 'mkdir -p build/debs && docker-compose -f docker/compose/copy-debs.yaml up'
+
+        stage('Run Tests') {
+            steps {
+                sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID bash -c "cd tests && go test"'
+                sh 'CORE=$(pwd) docker-compose -f tests/test_systemd_services.yaml up --abort-on-container-exit'
+                sh 'docker-compose -f examples/intkey_go/tests/test_intkey_smoke_go.yaml up --abort-on-container-exit'
+                sh 'docker-compose -f examples/intkey_go/tests/test_tp_intkey_go.yaml up --abort-on-container-exit'
+                sh 'docker-compose -f examples/xo_go/tests/test_xo_smoke_go.yaml up --abort-on-container-exit'
+                sh 'docker-compose -f examples/xo_go/tests/test_tp_xo_go.yaml up --abort-on-container-exit'
+            }
+        }
+
+        stage("Build Archive artifacts") {
+            steps {
+                sh 'mkdir -p build/debs && docker-compose -f docker/compose/copy-debs.yaml up'
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker-compose -f examples/intkey_go/tests/test_intkey_smoke_go.yaml down'
+            sh 'docker-compose -f examples/intkey_go/tests/test_tp_intkey_go.yaml down'
+            sh 'docker-compose -f examples/xo_go/tests/test_xo_smoke_go.yaml down'
+            sh 'docker-compose -f examples/xo_go/tests/test_tp_xo_go.yaml down'
             sh 'docker-compose -f docker/compose/copy-debs.yaml down'
-            archiveArtifacts artifacts: 'build/debs/*.deb'
+        }
+        success {
+            archiveArtifacts 'build/debs/*.deb'
+        }
+        aborted {
+            error "Aborted, exiting now"
+        }
+        failure {
+            error "Failed, exiting now"
         }
     }
 }
