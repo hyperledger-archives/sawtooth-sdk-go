@@ -8,7 +8,7 @@ Docker instructions
 ```
 cd sawtooth-sdk-go
 docker build . -t sawtooth-sdk-go
-docker run -v $(pwd):/project/sawtooth-sdk-go sawtooth-sdk-go
+docker run -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go
 ```
 
 Go generate will build the protos / mocks and place them in the protobuf or mocks directory respectively.
