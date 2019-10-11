@@ -2,7 +2,6 @@
 ```
 go get github.com/hyperledger/sawtooth-sdk-go
 cd $GOPATH/src/github.com/hyperledger/sawtooth-sdk-go
-go generate
 ```
 Docker instructions
 ```
@@ -11,4 +10,9 @@ docker build . -t sawtooth-sdk-go
 docker run -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go
 ```
 
-Go generate will build the protos / mocks and place them in the protobuf or mocks directory respectively.
+Updating Protocol Buffers
+
+When maintainers and contributors wish to update the protobuf definitions, they
+will need to run `go generate` after making any changes. `go generate` will
+remove the pre-existing protobuf directory, and generate a new protobuf directory
+based on `.proto` files in the protos directory.
