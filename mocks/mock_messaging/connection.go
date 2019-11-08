@@ -6,7 +6,7 @@ package mock_messaging
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	validator_pb2 "github.com/hyperledger/sawtooth-sdk-go/protobuf/validator_pb2"
+	validator_pb2 "protobuf/validator_pb2"
 	zmq4 "github.com/pebbe/zmq4"
 	reflect "reflect"
 )

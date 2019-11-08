@@ -27,7 +27,7 @@
 package processor
 
 import (
-	"github.com/hyperledger/sawtooth-sdk-go/protobuf/processor_pb2"
+	"protobuf/processor_pb2"
 )
 
 // TransactionHandler is the interface that defines the business logic for a
