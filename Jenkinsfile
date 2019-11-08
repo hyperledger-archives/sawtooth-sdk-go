@@ -83,7 +83,6 @@ pipeline {
         stage('Build Test Dependencies') {
             steps {
                 sh 'docker build . -t sawtooth-sdk-go:$ISOLATION_ID'
-                sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID'
                 sh 'docker-compose -f docker-compose-installed.yaml build'
             }
         }
