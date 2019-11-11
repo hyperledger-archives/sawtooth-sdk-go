@@ -63,8 +63,7 @@ COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 
 WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go
 
-RUN go generate \
- && cd examples/smallbank/smallbank_go \
+RUN cd examples/smallbank/smallbank_go \
  && if [ -d "bin" ]; then rm -rf bin; fi \
  && mkdir bin \
  && cd src/sawtooth_smallbank \
