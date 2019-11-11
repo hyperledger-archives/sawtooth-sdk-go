@@ -53,7 +53,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci bionic universe" >>
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-ENV GOPATH=/go
+ENV GOPATH=/go:/project/:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/:/go/src/github.com/hyperledger/sawtooth-sdk-go/protobuf
 
 ENV PATH=$PATH:/go/bin:/usr/lib/go-1.11/bin
 
