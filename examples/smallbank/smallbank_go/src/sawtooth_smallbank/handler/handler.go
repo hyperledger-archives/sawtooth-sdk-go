@@ -24,7 +24,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	"github.com/hyperledger/sawtooth-sdk-go/processor"
-	"github.com/hyperledger/sawtooth-sdk-go/protobuf/processor_pb2"
+	"protobuf/processor_pb2"
 	"protobuf/smallbank_pb2"
 	"strings"
 )

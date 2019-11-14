@@ -67,8 +67,7 @@ COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 
 WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go
 
-RUN go generate \
- && cd examples/xo_go \
+RUN cd examples/xo_go \
  && if [ -d "bin" ]; then rm -rf bin; fi \
  && mkdir bin \
  && cd src/sawtooth_xo \
