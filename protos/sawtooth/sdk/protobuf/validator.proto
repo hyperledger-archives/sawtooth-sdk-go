@@ -15,9 +15,10 @@
 
 syntax = "proto3";
 
+package sawtooth.sdk.protobuf;
+
 option java_multiple_files = true;
 option java_package = "sawtooth.sdk.protobuf";
-option go_package = "validator_pb2";
 
 // A list of messages to be transmitted together.
 message MessageList {

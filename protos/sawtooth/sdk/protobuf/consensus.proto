@@ -15,6 +15,8 @@
 
 syntax = "proto3";
 
+package sawtooth.sdk.protobuf;
+
 // --== Data Structures ==--
 
 // A consensus-related message sent between peers

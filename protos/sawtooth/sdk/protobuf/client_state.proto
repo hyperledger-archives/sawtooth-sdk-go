@@ -15,9 +15,10 @@
 
 syntax = "proto3";
 
+package sawtooth.sdk.protobuf;
+
 option java_multiple_files = true;
 option java_package = "sawtooth.sdk.protobuf";
-option go_package = "client_state_pb2";
 
 import "client_list_control.proto";
 

@@ -15,19 +15,20 @@
 
 syntax = "proto3";
 
+package sawtooth.sdk.protobuf;
+
 option java_multiple_files = true;
 option java_package = "sawtooth.sdk.protobuf";
-option go_package = "client_peer";
 
-message ClientPeersGetRequest{
-}
 
-message ClientPeersGetResponse {
-    enum Status {
-        STATUS_UNSET = 0;
-        OK = 1;
-        ERROR = 2;
+// Setting Container for on-chain configuration key/value pairs
+message Setting {
+    // Contains a setting entry (or entries, in the case of collisions).
+    message Entry {
+        string key = 1;
+        string value = 2;
     }
-    Status status = 1;
-    repeated string peers = 2;
+
+    // List of setting entries - more than one implies a state key collision
+    repeated Entry entries = 1;
 }

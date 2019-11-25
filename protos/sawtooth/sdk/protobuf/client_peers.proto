@@ -15,13 +15,20 @@
 
 syntax = "proto3";
 
+package sawtooth.sdk.protobuf;
+
 option java_multiple_files = true;
 option java_package = "sawtooth.sdk.protobuf";
-option go_package = "genesis_pb2";
 
-import "batch.proto";
+message ClientPeersGetRequest{
+}
 
-message GenesisData {
-    // The list of batches that will be applied during the genesis process
-    repeated Batch batches = 1;
+message ClientPeersGetResponse {
+    enum Status {
+        STATUS_UNSET = 0;
+        OK = 1;
+        ERROR = 2;
+    }
+    Status status = 1;
+    repeated string peers = 2;
 }
