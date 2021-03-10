@@ -22,7 +22,7 @@ import (
 	"encoding/hex"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	"github.com/hyperledger/sawtooth-sdk-go/processor"
-	"protobuf/processor_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/processor_pb2"
 	"strings"
 )
 

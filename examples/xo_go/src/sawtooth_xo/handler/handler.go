@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	"github.com/hyperledger/sawtooth-sdk-go/processor"
-	"protobuf/processor_pb2"
-	"sawtooth_xo/xo_payload"
-	"sawtooth_xo/xo_state"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/processor_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/examples/xo_go/src/sawtooth_xo/xo_payload"
+	"github.com/hyperledger/sawtooth-sdk-go/examples/xo_go/src/sawtooth_xo/xo_state"
 	"strings"
 )
 
