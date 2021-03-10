@@ -22,10 +22,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/src/protobuf/smallbank_pb2"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	"github.com/hyperledger/sawtooth-sdk-go/protobuf/processor_pb2"
-	"github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/src/protobuf/smallbank_pb2"
 	"strings"
 )
 

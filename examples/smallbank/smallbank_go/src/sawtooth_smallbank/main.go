@@ -17,11 +17,11 @@
 package main
 
 import (
+	smallbank "github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/src/sawtooth_smallbank/handler"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	"github.com/hyperledger/sawtooth-sdk-go/processor"
 	flags "github.com/jessevdk/go-flags"
 	"os"
-	smallbank "sawtooth_smallbank/handler"
 	"syscall"
 )
 
