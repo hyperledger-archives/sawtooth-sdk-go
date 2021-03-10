@@ -1,14 +1,14 @@
 #!/bin/bash
 
-if [ -f mocs ]; then
-    rm -rf mocs
+if [ -f mocks ]; then
+    rm -rf mocks
 fi
 
 if [ -d protobuf ]; then
     rm -rf protobuf
 fi
 
-mkdir -p  protobuf mocks/mock_messaging
+mkdir -p protobuf mocks/mock_messaging
 
 # Generate protos
 ./protogen
