@@ -24,9 +24,9 @@ import (
 	"github.com/hyperledger/sawtooth-sdk-go/messaging"
 	"github.com/hyperledger/sawtooth-sdk-go/mocks/mock_messaging"
 	"github.com/hyperledger/sawtooth-sdk-go/processor"
-	"protobuf/events_pb2"
-	"protobuf/state_context_pb2"
-	"protobuf/validator_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/events_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/state_context_pb2"
+	"github.com/hyperledger/sawtooth-sdk-go/protobuf/validator_pb2"
 	"testing"
 )
 

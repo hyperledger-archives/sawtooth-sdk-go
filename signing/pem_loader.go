@@ -18,6 +18,7 @@
 package signing
 
 // #cgo LDFLAGS: -lcrypto
+// #cgo pkg-config: openssl
 // #include "../c/c11_support.h"
 // #include "../c/c11_support.c"
 // #include "../c/loader.c"
