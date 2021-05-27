@@ -89,7 +89,7 @@ pipeline {
 
         stage('Run Lint') {
             steps {
-                sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID ./run_go_fmt'
+                sh 'docker run --rm -v $(pwd):/go/src/github.com/hyperledger/sawtooth-sdk-go sawtooth-sdk-go:$ISOLATION_ID ./bin/run_go_fmt'
             }
         }
 
