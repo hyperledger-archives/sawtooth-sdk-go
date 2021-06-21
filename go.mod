@@ -9,7 +9,7 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/pebbe/zmq4 v1.2.5
-	github.com/satori/go.uuid v1.2.0
+	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v2 v2.4.0
 )
