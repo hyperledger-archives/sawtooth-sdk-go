@@ -30,7 +30,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci xenial universe" >>
  && apt-get update \
  && apt-get install -y -q --allow-downgrades \
     build-essential \
-    golang-1.11-go \
+    golang-1.13-go \
     git \
     libssl-dev \
     libzmq3-dev \

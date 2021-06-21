@@ -40,7 +40,7 @@ RUN echo "deb http://repo.sawtooth.me/ubuntu/ci bionic universe" >> /etc/apt/sou
  || apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 308C15A29AD198E9) \
  && apt-get update \
  && apt-get install -y -q \
-    golang-1.11-go \
+    golang-1.13-go \
     git \
     libssl-dev \
     libzmq3-dev \
@@ -55,7 +55,7 @@ RUN echo "deb http://repo.sawtooth.me/ubuntu/ci bionic universe" >> /etc/apt/sou
 RUN pip3 install grpcio grpcio-tools
 ENV GOPATH=/go:/project/:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/:/go/src/github.com/hyperledger/sawtooth-sdk-go/protobuf
 
-ENV PATH=$PATH:/go/bin:/usr/lib/go-1.11/bin
+ENV PATH=$PATH:/go/bin:/usr/lib/go-1.13/bin
 
 RUN mkdir /go
 
