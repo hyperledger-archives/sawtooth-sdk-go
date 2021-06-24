@@ -33,7 +33,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci bionic universe" >>
  && apt-get update \
  && apt-get install -y -q \
     build-essential \
-    golang-1.11-go \
+    golang-1.13-go \
     git \
     libssl-dev \
     libzmq3-dev \
@@ -44,7 +44,7 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci bionic universe" >>
 
 ENV GOPATH=/go:/project/:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/
 
-ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.11/bin
+ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.13/bin
 
 RUN mkdir /go
 
