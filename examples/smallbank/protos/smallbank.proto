@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------
 
 syntax = "proto3";
-option go_package = "smallbank_pb2";
+option go_package = "protos/smallbank_pb2";
 
 message Account {
     // Customer ID

@@ -17,7 +17,7 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "sawtooth.sdk.protobuf";
-option go_package = "validator_pb2";
+option go_package = "protobuf/validator_pb2";
 
 // A list of messages to be transmitted together.
 message MessageList {
@@ -200,6 +200,9 @@ message Message {
         CONSENSUS_NOTIFY_BLOCK_VALID = 904;
         CONSENSUS_NOTIFY_BLOCK_INVALID = 905;
         CONSENSUS_NOTIFY_BLOCK_COMMIT = 906;
+
+        CONSENSUS_NOTIFY_ENGINE_ACTIVATED = 907;
+        CONSENSUS_NOTIFY_ENGINE_DEACTIVATED = 908;
 
         CONSENSUS_NOTIFY_ACK = 999;
     }
