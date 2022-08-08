@@ -10,6 +10,7 @@ func (self *EncodingError) Error() string {
 	return fmt.Sprintf("EncodingError: %s", self.Msg)
 }
 
+// IsEncodingError returns whether the error is an EncodingError.
 func IsEncodingError(err error) bool {
 	_, ok := err.(*EncodingError)
 	return ok
@@ -23,6 +24,7 @@ func (self *SendError) Error() string {
 	return fmt.Sprintf("SendError: %s", self.Msg)
 }
 
+// IsSendError returns whether the error is a SendError.
 func IsSendError(err error) bool {
 	_, ok := err.(*SendError)
 	return ok
@@ -36,6 +38,7 @@ func (self *ReceiveError) Error() string {
 	return fmt.Sprintf("ReceiveError: %s", self.Msg)
 }
 
+// IsReceiveError returns whether the error is a ReceiveError.
 func IsReceiveError(err error) bool {
 	_, ok := err.(*ReceiveError)
 	return ok
@@ -49,6 +52,7 @@ func (self *InvalidStateError) Error() string {
 	return fmt.Sprintf("InvalidState: %s", self.Msg)
 }
 
+// IsInvalidStateError returns whether the error is a InvalidStateError.
 func IsInvalidStateError(err error) bool {
 	_, ok := err.(*InvalidStateError)
 	return ok
@@ -62,6 +66,7 @@ func (self *UnknownBlockError) Error() string {
 	return fmt.Sprintf("UnknownBlock: %s", self.Msg)
 }
 
+// IsUnknownBlockError returns whether the error is a UnknownBlockError.
 func IsUnknownBlockError(err error) bool {
 	_, ok := err.(*UnknownBlockError)
 	return ok
@@ -75,6 +80,7 @@ func (self *UnknownPeerError) Error() string {
 	return fmt.Sprintf("UnknownPeer: %s", self.Msg)
 }
 
+// IsUnknownPeerError returns whether the error is a UnknownPeerError.
 func IsUnknownPeerError(err error) bool {
 	_, ok := err.(*UnknownPeerError)
 	return ok
@@ -86,6 +92,7 @@ func (self *NoChainHeadError) Error() string {
 	return fmt.Sprint("NoChainHead")
 }
 
+// IsNoChainHeadError returns whether the error is a NoChainHeadError.
 func IsNoChainHeadError(err error) bool {
 	_, ok := err.(*NoChainHeadError)
 	return ok
@@ -97,6 +104,7 @@ func (self *BlockNotReadyError) Error() string {
 	return fmt.Sprint("BlockNotReady")
 }
 
+// IsBlockNotReadyError returns whether the error is a BlockNotReadyError.
 func IsBlockNotReadyError(err error) bool {
 	_, ok := err.(*BlockNotReadyError)
 	return ok

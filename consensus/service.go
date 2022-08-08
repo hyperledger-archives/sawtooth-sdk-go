@@ -2,6 +2,7 @@ package consensus
 
 import (
 	"fmt"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/sawtooth-sdk-go/messaging"
 	"github.com/hyperledger/sawtooth-sdk-go/protobuf/consensus_pb2"
@@ -9,15 +10,18 @@ import (
 	zmq "github.com/pebbe/zmq4"
 )
 
-// Connection is for outgoing requests from this service. Responses come back over the same connection.
-
+// A ZmqService implements the ConsensusService interface, which provides
+// methods that allow the consensus engine to issue commands and requests.
 type ZmqService struct {
-	context    *zmq.Context
-	uri        string
+	context *zmq.Context
+	uri     string
+	// Connection is for outgoing requests from this service.
+	// Responses come back over the same connection.
 	connection messaging.Connection
 	corrIds    map[string]interface{}
 }
 
+// NewZmqService returns a new ZmqService.
 func NewZmqService(context *zmq.Context, uri string) *ZmqService {
 	return &ZmqService{
 		context: context,
@@ -26,6 +30,7 @@ func NewZmqService(context *zmq.Context, uri string) *ZmqService {
 	}
 }
 
+// Start establishes a new ZMQ connection.
 func (self *ZmqService) Start() {
 	connection, err := messaging.NewConnection(self.context, zmq.PAIR, self.uri, false)
 	if err != nil {
@@ -35,10 +40,12 @@ func (self *ZmqService) Start() {
 	self.connection = connection
 }
 
+// Shutdown closes the active ZMQ connection.
 func (self *ZmqService) Shutdown() {
 	self.connection.Close()
 }
 
+// SendTo sends a consensus message to a specific, connected peer.
 func (self *ZmqService) SendTo(peer PeerId, messageType string, payload []byte) error {
 	// Prepare the request message
 	request := consensus_pb2.ConsensusSendToRequest{
@@ -65,6 +72,7 @@ func (self *ZmqService) SendTo(peer PeerId, messageType string, payload []byte) 
 	return nil
 }
 
+// Broadcast broadcasts a message to all connected peers.
 func (self *ZmqService) Broadcast(messageType string, payload []byte) error {
 	// Prepare the request message
 	request := consensus_pb2.ConsensusBroadcastRequest{
@@ -90,6 +98,9 @@ func (self *ZmqService) Broadcast(messageType string, payload []byte) error {
 	return nil
 }
 
+// InitializeBlock initializes a new block built on the block with
+// the given previous id and begins adding batches to it. If no
+// previous id is specified, the current head will be used.
 func (self *ZmqService) InitializeBlock(previousId BlockId) error {
 	// Prepare the request message
 	request := consensus_pb2.ConsensusInitializeBlockRequest{
@@ -121,6 +132,8 @@ func (self *ZmqService) InitializeBlock(previousId BlockId) error {
 	return nil
 }
 
+// SummarizeBlock stops adding batches to the current block
+// and returns a summary of its contents.
 func (self *ZmqService) SummarizeBlock() ([]byte, error) {
 	request := consensus_pb2.ConsensusSummarizeBlockRequest{}
 	response := consensus_pb2.ConsensusSummarizeBlockResponse{}
@@ -147,6 +160,9 @@ func (self *ZmqService) SummarizeBlock() ([]byte, error) {
 	return response.GetSummary(), nil
 }
 
+// FinalizeBlock inserts the given consensus data into the block and
+// signs it. If this call is successful, the consensus engine will
+// receive the block afterwards.
 func (self *ZmqService) FinalizeBlock(data []byte) (BlockId, error) {
 	request := consensus_pb2.ConsensusFinalizeBlockRequest{
 		Data: data,
@@ -175,6 +191,7 @@ func (self *ZmqService) FinalizeBlock(data []byte) (BlockId, error) {
 	return NewBlockIdFromBytes(response.GetBlockId()), nil
 }
 
+// CancelBlock stops adding batches to the current block and abandons it.
 func (self *ZmqService) CancelBlock() error {
 	request := consensus_pb2.ConsensusCancelBlockRequest{}
 	response := consensus_pb2.ConsensusCancelBlockResponse{}
@@ -200,6 +217,7 @@ func (self *ZmqService) CancelBlock() error {
 	return nil
 }
 
+// CheckBlocks updates the prioritization of blocks to check.
 func (self *ZmqService) CheckBlocks(blockIds []BlockId) error {
 	logger.Debug(blockIds)
 	blockIdsRequest := make([][]byte, len(blockIds))
@@ -232,6 +250,7 @@ func (self *ZmqService) CheckBlocks(blockIds []BlockId) error {
 	return nil
 }
 
+// CommitBlock updates the block that should be committed.
 func (self *ZmqService) CommitBlock(blockId BlockId) error {
 	request := consensus_pb2.ConsensusCommitBlockRequest{
 		BlockId: blockId.AsBytes(),
@@ -258,6 +277,7 @@ func (self *ZmqService) CommitBlock(blockId BlockId) error {
 	return nil
 }
 
+// IgnoreBlock signals that this block is no longer being committed.
 func (self *ZmqService) IgnoreBlock(blockId BlockId) error {
 	request := consensus_pb2.ConsensusIgnoreBlockRequest{
 		BlockId: blockId.AsBytes(),
@@ -284,6 +304,7 @@ func (self *ZmqService) IgnoreBlock(blockId BlockId) error {
 	return nil
 }
 
+// FailBlock marks this block as invalid from the perspective of consensus.
 func (self *ZmqService) FailBlock(blockId BlockId) error {
 	request := consensus_pb2.ConsensusFailBlockRequest{
 		BlockId: blockId.AsBytes(),
@@ -310,6 +331,7 @@ func (self *ZmqService) FailBlock(blockId BlockId) error {
 	return nil
 }
 
+// GetBlocks returns consensus-related information about blocks.
 func (self *ZmqService) GetBlocks(blockIds []BlockId) (map[BlockId]Block, error) {
 	blockIdsRequest := make([][]byte, len(blockIds))
 	for i, blockId := range blockIds {
@@ -345,6 +367,7 @@ func (self *ZmqService) GetBlocks(blockIds []BlockId) (map[BlockId]Block, error)
 	return results, nil
 }
 
+// GetChainHead gets the chain head block.
 func (self *ZmqService) GetChainHead() (Block, error) {
 	request := consensus_pb2.ConsensusChainHeadGetRequest{}
 	response := consensus_pb2.ConsensusChainHeadGetResponse{}
@@ -367,6 +390,7 @@ func (self *ZmqService) GetChainHead() (Block, error) {
 	return newBlockFromProto(response.GetBlock()), nil
 }
 
+// GetSettings returns the value of settings as of the given block.
 func (self *ZmqService) GetSettings(blockId BlockId, keys []string) (map[string]string, error) {
 	request := consensus_pb2.ConsensusSettingsGetRequest{
 		BlockId: blockId.AsBytes(),
@@ -398,6 +422,7 @@ func (self *ZmqService) GetSettings(blockId BlockId, keys []string) (map[string]
 	return result, nil
 }
 
+// GetState returns values in state as of the given block.
 func (self *ZmqService) GetState(blockId BlockId, addresses []string) (map[string][]byte, error) {
 	request := consensus_pb2.ConsensusStateGetRequest{
 		BlockId:   blockId.AsBytes(),
@@ -429,6 +454,7 @@ func (self *ZmqService) GetState(blockId BlockId, addresses []string) (map[strin
 	return result, nil
 }
 
+// serviceRpc is a general purpose RPC routine to implement service requests from the consensus engine, back to the validator.
 func (self *ZmqService) serviceRpc(request proto.Message, requestType validator_pb2.Message_MessageType, response proto.Message, responseType validator_pb2.Message_MessageType) error {
 	// Marshal the request message
 	bytes, err := proto.Marshal(request)
@@ -465,6 +491,7 @@ func (self *ZmqService) serviceRpc(request proto.Message, requestType validator_
 	return nil
 }
 
+// hasCorrelationId returns whether this ZmqService contains a given CorrelationId
 func (self *ZmqService) hasCorrelationId(corrId string) bool {
 	_, exists := self.corrIds[corrId]
 	return exists

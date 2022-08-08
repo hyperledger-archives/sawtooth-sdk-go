@@ -2,6 +2,10 @@ package consensus
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/sawtooth-sdk-go/logging"
 	"github.com/hyperledger/sawtooth-sdk-go/messaging"
@@ -9,9 +13,6 @@ import (
 	"github.com/hyperledger/sawtooth-sdk-go/protobuf/network_pb2"
 	"github.com/hyperledger/sawtooth-sdk-go/protobuf/validator_pb2"
 	zmq "github.com/pebbe/zmq4"
-	"os"
-	"os/signal"
-	"time"
 )
 
 var logger *logging.Logger = logging.Get()
@@ -20,6 +21,7 @@ const REGISTER_TIMEOUT = 300
 const INITIAL_RETRY_DELAY = time.Millisecond * 100
 const MAX_RETRY_DELAY = time.Second * 3
 
+// A ConsensusEngine implements methods related to handling consensus.
 type ConsensusEngine struct {
 	uri        string
 	impl       ConsensusEngineImpl
@@ -30,6 +32,7 @@ type ConsensusEngine struct {
 	service *ZmqService
 }
 
+// NewConsensusEngine returns a new ConsensusEngine.
 func NewConsensusEngine(uri string, impl ConsensusEngineImpl) *ConsensusEngine {
 	return &ConsensusEngine{
 		uri:  uri,
@@ -37,6 +40,7 @@ func NewConsensusEngine(uri string, impl ConsensusEngineImpl) *ConsensusEngine {
 	}
 }
 
+// Start is called after the ConsensusEngine has been initialized.
 func (self *ConsensusEngine) Start() error {
 	for {
 		context, err := zmq.NewContext()
@@ -56,6 +60,7 @@ func (self *ConsensusEngine) Start() error {
 	return nil
 }
 
+// start continuously handles incoming messages.
 func (self *ConsensusEngine) start(context *zmq.Context) (bool, error) {
 	var err error
 
@@ -153,6 +158,7 @@ func (self *ConsensusEngine) start(context *zmq.Context) (bool, error) {
 	}
 }
 
+// Shutdown stops the ConsensusEngine.
 func (self *ConsensusEngine) Shutdown() {
 	// Initiate a clean shutdown
 	if self.shutdownTx != nil {
@@ -163,6 +169,7 @@ func (self *ConsensusEngine) Shutdown() {
 	}
 }
 
+// ShutdownOnSignal configures the ConsensusEngine to shutdown upon recieving a certain signal.
 func (self *ConsensusEngine) ShutdownOnSignal(siglist ...os.Signal) {
 	// Setup signal handlers
 	ch := make(chan os.Signal)
@@ -179,6 +186,9 @@ func (self *ConsensusEngine) ShutdownOnSignal(siglist ...os.Signal) {
 	}()
 }
 
+// register performs the initial registration of the consensus engine with
+// the validator. Returns StartupState which contains information about the
+// validator's current state.
 func (self *ConsensusEngine) register(validator, shutdownRx messaging.Connection) (StartupState, error) {
 	regRequest := &consensus_pb2.ConsensusRegisterRequest{
 		Name:    self.impl.Name(),
@@ -278,6 +288,8 @@ func (self *ConsensusEngine) register(validator, shutdownRx messaging.Connection
 	}
 }
 
+// waitUntilActive waits for the validator to send an activation message containing
+// startup state. This method is only applicable with validator versions > v1.1.
 func (self *ConsensusEngine) waitUntilActive(validator, shutdownRx messaging.Connection) (StartupState, error) {
 	poller := zmq.NewPoller()
 	poller.Add(validator.Socket(), zmq.POLLIN)
@@ -337,7 +349,7 @@ func (self *ConsensusEngine) waitUntilActive(validator, shutdownRx messaging.Con
 	}
 }
 
-// Handle messages from the validator
+// receiveValidator handles messages from the validator.
 func (self *ConsensusEngine) receiveValidator(validator, service messaging.Connection) {
 	// Receive a message from the validator
 	_, data, err := validator.RecvData()
@@ -415,7 +427,7 @@ func (self *ConsensusEngine) receiveValidator(validator, service messaging.Conne
 	}
 }
 
-// Handle messages from the service
+// receiveService handles messages from the service.
 func (self *ConsensusEngine) receiveService(validator, service messaging.Connection) {
 	// Receive a message from the service
 	_, data, err := service.RecvData()
@@ -438,6 +450,7 @@ func (self *ConsensusEngine) receiveService(validator, service messaging.Connect
 	}
 }
 
+// handleNotification handles an incoming protobuf message from the validator.
 func (self *ConsensusEngine) handleNotification(msg *validator_pb2.Message) {
 	unmarshalHelper := func(msg *validator_pb2.Message, message proto.Message) error {
 		err := proto.Unmarshal(msg.GetContent(), message)
@@ -555,7 +568,7 @@ func (self *ConsensusEngine) handleNotification(msg *validator_pb2.Message) {
 	}
 }
 
-// Handle monitor events
+// receiveMonitor handles monitor events.
 func (self *ConsensusEngine) receiveMonitor(monitor *zmq.Socket, shutdownTx messaging.Connection) bool {
 	restart := false
 	event, endpoint, _, err := monitor.RecvEvent(0)
@@ -576,7 +589,7 @@ func (self *ConsensusEngine) receiveMonitor(monitor *zmq.Socket, shutdownTx mess
 	return restart
 }
 
-// Handle shutdown
+// receiveShutdown handles shutdown commands.
 func (self *ConsensusEngine) receiveShutdown(shutdownRx, validator, service messaging.Connection, monitor *zmq.Socket) bool {
 	_, data, err := shutdownRx.RecvData()
 	if err != nil {
@@ -602,6 +615,7 @@ func (self *ConsensusEngine) receiveShutdown(shutdownRx, validator, service mess
 	return restart
 }
 
+// performShutdown shuts down the ConsensusEngine.
 func (self *ConsensusEngine) performShutdown(shutdownRx, validator, service messaging.Connection, monitor *zmq.Socket) error {
 	self.notifyChan <- &NotificationShutdown{}
 	close(self.notifyChan)
