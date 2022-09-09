@@ -24,7 +24,7 @@ type BlockId string
 
 const BLOCK_ID_NULL BlockId = ""
 
-// String returns a UTF-8 human readable hexidecimal representation of a BlockId.
+// String returns a UTF-8 human-readable hexadecimal representation of a BlockId.
 func (self BlockId) String() string {
 	return hex.EncodeToString([]byte(self))
 }
@@ -52,7 +52,7 @@ type PeerId string
 
 const PEER_ID_NULL PeerId = ""
 
-// String returns a UTF-8 human readable hexidecimal representation of a PeerId.
+// String returns a UTF-8 human-readable hexadecimal representation of a PeerId.
 func (self PeerId) String() string {
 	return hex.EncodeToString([]byte(self))
 }
@@ -137,7 +137,7 @@ func (self *block) Summary() []byte {
 	return self.summary
 }
 
-// String returns a UTF-8 human readable string description of a block.
+// String returns a UTF-8 human-readable string description of a block.
 func (self *block) String() string {
 	return fmt.Sprintf("Block(BlockNum: %d, BlockId: %s, PreviousId: %s, SignerId: %s, Payload: %s, Summary: %s)",
 		self.BlockNum(),
@@ -154,7 +154,7 @@ type PeerInfo interface {
 	PeerId() PeerId
 }
 
-// A peerInfo stores information about a peer, and implemnets the PeerInfo interface.
+// A peerInfo stores information about a peer, and implements the PeerInfo interface.
 type peerInfo struct {
 	peerId PeerId
 }
@@ -173,7 +173,7 @@ type PeerMessageHeader interface {
 	Version() string
 }
 
-// A peerMessageHeader stores information about peer headers, and implments the PeerMessageHeader interface.
+// A peerMessageHeader stores information about peer headers, and implements the PeerMessageHeader interface.
 type peerMessageHeader struct {
 	signerId      []byte
 	contentSha512 []byte

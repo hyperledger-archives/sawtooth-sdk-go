@@ -15,7 +15,7 @@ import (
 type ZmqService struct {
 	context *zmq.Context
 	uri     string
-	// Connection is for outgoing requests from this service.
+	// connection is for outgoing requests from this service.
 	// Responses come back over the same connection.
 	connection messaging.Connection
 	corrIds    map[string]interface{}
@@ -30,7 +30,7 @@ func NewZmqService(context *zmq.Context, uri string) *ZmqService {
 	}
 }
 
-// Start establishes a new ZMQ connection.
+// Start establishes a new ZMQ connection to the main ConsensusEngine service socket.
 func (self *ZmqService) Start() {
 	connection, err := messaging.NewConnection(self.context, zmq.PAIR, self.uri, false)
 	if err != nil {

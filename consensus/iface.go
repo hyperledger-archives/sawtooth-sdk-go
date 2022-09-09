@@ -1,8 +1,8 @@
 package consensus
 
-// ConsensusService provides methods that allow the consensus engine to issue commands and requests.
+// ConsensusService provides methods that allow the consensus engine to issue commands and requests
+// back to the validator.
 type ConsensusService interface {
-
 	// -- P2P --
 
 	// SendTo sends a consensus message to a specific, connected peer.
@@ -57,7 +57,7 @@ type ConsensusEngineImpl interface {
 	Version() string
 
 	// Start is called after the engine is initialized, when a connection to the validator has been
-	// established. Notifications from the validator are sent along `updates`. `service` is used
-	// to send requests to the validator.
+	// established. Requests to the validator are sent via calls to the interface methods on service.
+	// Notifications from the validator are received via notifyChan.
 	Start(startupState StartupState, service ConsensusService, notifyChan chan Notification) error
 }

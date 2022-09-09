@@ -21,7 +21,8 @@ const REGISTER_TIMEOUT = 300
 const INITIAL_RETRY_DELAY = time.Millisecond * 100
 const MAX_RETRY_DELAY = time.Second * 3
 
-// A ConsensusEngine implements methods related to handling consensus.
+// A ConsensusEngine implements the bulk of the behavior required to interface a pluggable consensus engine
+// with the Sawtooth validator.
 type ConsensusEngine struct {
 	uri        string
 	impl       ConsensusEngineImpl
@@ -32,7 +33,8 @@ type ConsensusEngine struct {
 	service *ZmqService
 }
 
-// NewConsensusEngine returns a new ConsensusEngine.
+// NewConsensusEngine returns a new ConsensusEngine instance, given the URI of a Sawtooth validator consensus
+// port and an implementation of ConsensusEngineImpl.
 func NewConsensusEngine(uri string, impl ConsensusEngineImpl) *ConsensusEngine {
 	return &ConsensusEngine{
 		uri:  uri,
@@ -40,7 +42,8 @@ func NewConsensusEngine(uri string, impl ConsensusEngineImpl) *ConsensusEngine {
 	}
 }
 
-// Start is called after the ConsensusEngine has been initialized.
+// Start is called after the ConsensusEngine has been created, and begins communcation with the validator. Start
+// does not return until the consensus engine terminates.
 func (self *ConsensusEngine) Start() error {
 	for {
 		context, err := zmq.NewContext()
@@ -60,7 +63,7 @@ func (self *ConsensusEngine) Start() error {
 	return nil
 }
 
-// start continuously handles incoming messages.
+// start continuously handles messages that arrive to the conesnsus engine.
 func (self *ConsensusEngine) start(context *zmq.Context) (bool, error) {
 	var err error
 
@@ -169,7 +172,7 @@ func (self *ConsensusEngine) Shutdown() {
 	}
 }
 
-// ShutdownOnSignal configures the ConsensusEngine to shutdown upon recieving a certain signal.
+// ShutdownOnSignal configures the ConsensusEngine to shutdown upon receiving a certain signal.
 func (self *ConsensusEngine) ShutdownOnSignal(siglist ...os.Signal) {
 	// Setup signal handlers
 	ch := make(chan os.Signal)
