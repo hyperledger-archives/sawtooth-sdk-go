@@ -28,7 +28,7 @@ type ConsensusEngine struct {
 	impl       ConsensusEngineImpl
 	shutdownTx messaging.Connection
 
-	notifyChan chan Notification
+	updateChan chan ConsensusUpdate
 
 	service *ZmqService
 }
@@ -119,14 +119,14 @@ func (self *ConsensusEngine) start(context *zmq.Context) (bool, error) {
 	logger.Info("Consensus engine is active")
 
 	// Initialize a channel to pass notifications to the engine impl
-	self.notifyChan = make(chan Notification, 2)
+	self.updateChan = make(chan ConsensusUpdate, 2)
 
 	// Create and start the service
 	self.service = NewZmqService(context, "inproc://service")
 	self.service.Start()
 
 	// Start the impl in its own goroutine.
-	go self.impl.Start(startupState, self.service, self.notifyChan)
+	go self.impl.Start(startupState, self.service, self.updateChan)
 
 	// Set up ZMQ polling across the various components
 	poller := zmq.NewPoller()
@@ -383,8 +383,8 @@ func (self *ConsensusEngine) receiveValidator(validator, service messaging.Conne
 		validator_pb2.Message_CONSENSUS_NOTIFY_BLOCK_INVALID,
 		validator_pb2.Message_CONSENSUS_NOTIFY_BLOCK_COMMIT:
 
-		// Process the notification and pass it to the impl
-		self.handleNotification(msg)
+		// Process the update and pass it to the impl
+		self.handleUpdate(msg)
 
 		// Send an ACK to the validator
 		data, err := proto.Marshal(&consensus_pb2.ConsensusNotifyAck{})
@@ -453,8 +453,8 @@ func (self *ConsensusEngine) receiveService(validator, service messaging.Connect
 	}
 }
 
-// handleNotification handles an incoming protobuf message from the validator.
-func (self *ConsensusEngine) handleNotification(msg *validator_pb2.Message) {
+// handleUpdate handles an incoming protobuf message from the validator.
+func (self *ConsensusEngine) handleUpdate(msg *validator_pb2.Message) {
 	unmarshalHelper := func(msg *validator_pb2.Message, message proto.Message) error {
 		err := proto.Unmarshal(msg.GetContent(), message)
 		if err != nil {
@@ -467,107 +467,107 @@ func (self *ConsensusEngine) handleNotification(msg *validator_pb2.Message) {
 
 	switch msg.GetMessageType() {
 	case validator_pb2.Message_CONSENSUS_NOTIFY_PEER_CONNECTED:
-		notificationProto := consensus_pb2.ConsensusNotifyPeerConnected{}
-		err := unmarshalHelper(msg, &notificationProto)
+		updateProto := consensus_pb2.ConsensusNotifyPeerConnected{}
+		err := unmarshalHelper(msg, &updateProto)
 		if err != nil {
 			logger.Error(err)
 			break
 		}
 
-		notification := NotificationPeerConnected{
+		update := UpdatePeerConnected{
 			PeerInfo: &peerInfo{
-				peerId: NewPeerIdFromSlice(notificationProto.GetPeerInfo().PeerId),
+				peerId: NewPeerIdFromSlice(updateProto.GetPeerInfo().PeerId),
 			},
 		}
 
-		self.notifyChan <- notification
+		self.updateChan <- update
 
 	case validator_pb2.Message_CONSENSUS_NOTIFY_PEER_DISCONNECTED:
-		notificationProto := consensus_pb2.ConsensusNotifyPeerDisconnected{}
-		err := unmarshalHelper(msg, &notificationProto)
+		updateProto := consensus_pb2.ConsensusNotifyPeerDisconnected{}
+		err := unmarshalHelper(msg, &updateProto)
 		if err != nil {
 			logger.Error(err)
 			break
 		}
 
-		notification := NotificationPeerDisconnected{
+		update := UpdatePeerDisconnected{
 			PeerInfo: &peerInfo{
-				peerId: NewPeerIdFromSlice(notificationProto.GetPeerId()),
+				peerId: NewPeerIdFromSlice(updateProto.GetPeerId()),
 			},
 		}
 
-		self.notifyChan <- notification
+		self.updateChan <- update
 
 	case validator_pb2.Message_CONSENSUS_NOTIFY_PEER_MESSAGE:
-		notificationProto := consensus_pb2.ConsensusNotifyPeerMessage{}
-		err := unmarshalHelper(msg, &notificationProto)
+		updateProto := consensus_pb2.ConsensusNotifyPeerMessage{}
+		err := unmarshalHelper(msg, &updateProto)
 		if err != nil {
 			logger.Error(err)
 			break
 		}
 
-		notification := NotificationPeerMessage{
-			PeerMessage: newPeerMessageFromProto(notificationProto.GetMessage()),
-			SenderId:    NewPeerIdFromSlice(notificationProto.GetSenderId()),
+		update := UpdatePeerMessage{
+			PeerMessage: newPeerMessageFromProto(updateProto.GetMessage()),
+			SenderId:    NewPeerIdFromSlice(updateProto.GetSenderId()),
 		}
 
-		self.notifyChan <- notification
+		self.updateChan <- update
 
 	case validator_pb2.Message_CONSENSUS_NOTIFY_BLOCK_NEW:
-		notificationProto := consensus_pb2.ConsensusNotifyBlockNew{}
-		err := unmarshalHelper(msg, &notificationProto)
+		updateProto := consensus_pb2.ConsensusNotifyBlockNew{}
+		err := unmarshalHelper(msg, &updateProto)
 		if err != nil {
 			logger.Error(err)
 			break
 		}
 
-		notification := NotificationBlockNew{
-			Block: newBlockFromProto(notificationProto.GetBlock()),
+		update := UpdateBlockNew{
+			Block: newBlockFromProto(updateProto.GetBlock()),
 		}
 
-		self.notifyChan <- notification
+		self.updateChan <- update
 
 	case validator_pb2.Message_CONSENSUS_NOTIFY_BLOCK_VALID:
-		notificationProto := consensus_pb2.ConsensusNotifyBlockValid{}
-		err := unmarshalHelper(msg, &notificationProto)
+		updateProto := consensus_pb2.ConsensusNotifyBlockValid{}
+		err := unmarshalHelper(msg, &updateProto)
 		if err != nil {
 			logger.Error(err)
 			break
 		}
 
-		notification := NotificationBlockValid{
-			BlockId: NewBlockIdFromBytes(notificationProto.GetBlockId()),
+		update := UpdateBlockValid{
+			BlockId: NewBlockIdFromBytes(updateProto.GetBlockId()),
 		}
 
-		self.notifyChan <- notification
+		self.updateChan <- update
 
 	case validator_pb2.Message_CONSENSUS_NOTIFY_BLOCK_INVALID:
-		notificationProto := consensus_pb2.ConsensusNotifyBlockInvalid{}
-		err := unmarshalHelper(msg, &notificationProto)
+		updateProto := consensus_pb2.ConsensusNotifyBlockInvalid{}
+		err := unmarshalHelper(msg, &updateProto)
 		if err != nil {
 			logger.Error(err)
 			break
 		}
 
-		notification := NotificationBlockInvalid{
-			BlockId: NewBlockIdFromBytes(notificationProto.GetBlockId()),
+		update := UpdateBlockInvalid{
+			BlockId: NewBlockIdFromBytes(updateProto.GetBlockId()),
 		}
 
-		self.notifyChan <- notification
+		self.updateChan <- update
 
 	case validator_pb2.Message_CONSENSUS_NOTIFY_BLOCK_COMMIT:
-		notificationProto := consensus_pb2.ConsensusNotifyBlockCommit{}
-		err := unmarshalHelper(msg, &notificationProto)
+		updateProto := consensus_pb2.ConsensusNotifyBlockCommit{}
+		err := unmarshalHelper(msg, &updateProto)
 		if err != nil {
 			logger.Error(err)
 			break
 		}
 
-		notification := NotificationBlockCommit{
-			BlockId: NewBlockIdFromBytes(notificationProto.GetBlockId()),
+		update := UpdateBlockCommit{
+			BlockId: NewBlockIdFromBytes(updateProto.GetBlockId()),
 		}
 
-		self.notifyChan <- notification
+		self.updateChan <- update
 	}
 }
 
@@ -620,8 +620,8 @@ func (self *ConsensusEngine) receiveShutdown(shutdownRx, validator, service mess
 
 // performShutdown shuts down the ConsensusEngine.
 func (self *ConsensusEngine) performShutdown(shutdownRx, validator, service messaging.Connection, monitor *zmq.Socket) error {
-	self.notifyChan <- &NotificationShutdown{}
-	close(self.notifyChan)
+	self.updateChan <- &UpdateShutdown{}
+	close(self.updateChan)
 	self.service.Shutdown()
 
 	monitor.Close()

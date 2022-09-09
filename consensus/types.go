@@ -310,94 +310,95 @@ func newStartupStateFromProtos(chainHeadProto *consensus_pb2.ConsensusBlock, pee
 	return startupState
 }
 
-// A Notification contains the type of notification.
-type Notification interface {
+// A ConsensusUpdate contains the type of notification.
+type ConsensusUpdate interface {
 	GetType() string
 }
 
-// A NotificationPeerConnected implements the Notification interface,
-// signals the connecting of a peer, and contains it's PeerInfo.
-type NotificationPeerConnected struct {
+// A UpdatePeerConnected implements the ConsensusUpdate interface.
+// This update signals the connection of a peer and contains its PeerInfo.
+type UpdatePeerConnected struct {
 	PeerInfo PeerInfo
 }
 
-// GetType returns the notification type of NotificationPeerConnected.
-func (self NotificationPeerConnected) GetType() string {
-	return "NotificationPeerConnected"
+// GetType returns the update type of UpdatePeerConnected.
+func (self UpdatePeerConnected) GetType() string {
+	return "UpdatePeerConnected"
 }
 
-// A NotificationPeerDisconnected implements the Notification interface,
-// signals the disconnecting of a peer, and contains it's PeerInfo.
-type NotificationPeerDisconnected struct {
+// A UpdatePeerDisconnected implements the ConsensusUpdate interface.
+// This update signals the disconnection of a peer and contains its PeerInfo.
+type UpdatePeerDisconnected struct {
 	PeerInfo PeerInfo
 }
 
-// GetType returns the notification type of NotificationPeerDisconnected.
-func (self NotificationPeerDisconnected) GetType() string {
-	return "NotificationPeerDisconnected"
+// GetType returns the update type of UpdatePeerDisconnected.
+func (self UpdatePeerDisconnected) GetType() string {
+	return "UpdatePeerDisconnected"
 }
 
-// A NotificationPeerMessage implements the Notification interface,
-// and signals an incoming message from a peer.
-type NotificationPeerMessage struct {
+// A UpdatePeerMessage implements the ConsensusUpdate interface.
+// This update signals an incoming message from a peer.
+type UpdatePeerMessage struct {
 	PeerMessage PeerMessage
 	SenderId    PeerId
 }
 
-// GetType returns the notification type of NotificationPeerMessage.
-func (self NotificationPeerMessage) GetType() string {
-	return "NotificationPeerMessage"
+// GetType returns the update type of UpdatePeerMessage.
+func (self UpdatePeerMessage) GetType() string {
+	return "UpdatePeerMessage"
 }
 
-// A NotificationBlockNew implements the Notification interface,
-// and signals the arrival of a new block.
-type NotificationBlockNew struct {
+// A UpdateBlockNew implements the ConsensusUpdate interface.
+// This update signals the arrival of a new block.
+type UpdateBlockNew struct {
 	Block Block
 }
 
-// GetType returns the notification type of NotificationBlockNew.
-func (self NotificationBlockNew) GetType() string {
-	return "NotificationBlockNew"
+// GetType returns the update type of UpdateBlockNew.
+func (self UpdateBlockNew) GetType() string {
+	return "UpdateBlockNew"
 }
 
-// A NotificationBlockValid implements the Notification interface,
-// and signals that a block is valid.
-type NotificationBlockValid struct {
+// A UpdateBlockValid implements the ConsensusUpdate interface.
+// This update signals that a block is valid.
+type UpdateBlockValid struct {
 	BlockId BlockId
 }
 
-// GetType returns the notification type of NotificationBlockValid.
-func (self NotificationBlockValid) GetType() string {
-	return "NotificationBlockValid"
+// GetType returns the update type of UpdateBlockValid.
+func (self UpdateBlockValid) GetType() string {
+	return "UpdateBlockValid"
 }
 
-// A NotificationBlockInvalid implements the Notification interface,
-// and signals that a block is invalid.
-type NotificationBlockInvalid struct {
+// A UpdateBlockInvalid implements the ConsensusUpdate interface.
+// This update signals that a block is invalid.
+type UpdateBlockInvalid struct {
 	BlockId BlockId
 }
 
-// GetType returns the notification type of NotificationBlockInvalid.
-func (self NotificationBlockInvalid) GetType() string {
-	return "NotificationBlockInvalid"
+// GetType returns the update type of UpdateBlockInvalid.
+func (self UpdateBlockInvalid) GetType() string {
+	return "UpdateBlockInvalid"
 }
 
-// A NotificationBlockCommit implements the Notification interface,
-// and signals that a block has been commited.
-type NotificationBlockCommit struct {
+// A UpdateBlockCommit implements the ConsensusUpdate interface.
+// This update signals that a block has been committed.
+type UpdateBlockCommit struct {
 	BlockId BlockId
 }
 
-// GetType returns the notification type of NotificationBlockCommit.
-func (self NotificationBlockCommit) GetType() string {
-	return "NotificationBlockCommit"
+// GetType returns the update type of UpdateBlockCommit.
+func (self UpdateBlockCommit) GetType() string {
+	return "UpdateBlockCommit"
 }
 
-// A NotificationShutdown implements the Notification interface,
-// and signals that we should shutdown.
-type NotificationShutdown struct{}
+// A UpdateShutdown implements the ConsensusUpdate interface.
+// This update signals that the validator has instructed the consensus
+// engine to shut down.
+type UpdateShutdown struct{}
 
-// GetType returns the notification type of NotificationShutdown.
-func (self NotificationShutdown) GetType() string {
-	return "NotificationShutdown"
+// GetType returns the update type of UpdateShutdown.
+func (self UpdateShutdown) GetType() string {
+	return "UpdateShutdown"
 }

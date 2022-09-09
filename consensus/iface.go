@@ -58,6 +58,6 @@ type ConsensusEngineImpl interface {
 
 	// Start is called after the engine is initialized, when a connection to the validator has been
 	// established. Requests to the validator are sent via calls to the interface methods on service.
-	// Notifications from the validator are received via notifyChan.
-	Start(startupState StartupState, service ConsensusService, notifyChan chan Notification) error
+	// Updates from the validator are received via updateChan.
+	Start(startupState StartupState, service ConsensusService, updateChan chan ConsensusUpdate) error
 }
