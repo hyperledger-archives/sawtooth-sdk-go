@@ -24,7 +24,8 @@ type logGuard struct {
 	notReadyToFinalize  bool
 }
 
-// devmodeService pairs a ConsensusService with a logGuard.
+// devmodeService pairs a ConsensusService with a logGuard and implements wrapper
+// methods around ConsensusService methods.
 type devmodeService struct {
 	service  consensus.ConsensusService
 	logGuard logGuard

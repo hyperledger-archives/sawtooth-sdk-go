@@ -12,7 +12,7 @@ import (
 	"github.com/jessevdk/go-flags"
 )
 
-// init is a special function in Go that is run once before main
+// init is a special function in Go that is run once before main.
 func init() {
 	// initialize RNG
 	rand.Seed(time.Now().UnixNano())
