@@ -254,7 +254,7 @@ func (self *DevmodeEngineImpl) Name() string {
 
 // Start is called after the engine is initialized, when a connection to the validator has been
 // established.
-func (self *DevmodeEngineImpl) Start(startupState consensus.StartupState, service consensus.ConsensusService, notifyChan chan consensus.Notification) error {
+func (self *DevmodeEngineImpl) Start(startupState consensus.StartupState, service consensus.ConsensusService, updateChan chan consensus.ConsensusUpdate) error {
 	self.service = NewDevmodeService(service)
 	self.chainHead = startupState.ChainHead()
 	self.waitTime = self.service.calculateWaitTime(self.chainHead.BlockId())
@@ -265,17 +265,17 @@ func (self *DevmodeEngineImpl) Start(startupState consensus.StartupState, servic
 
 	for {
 		select {
-		case n := <-notifyChan:
+		case n := <-updateChan:
 			switch notification := n.(type) {
-			case consensus.NotificationShutdown:
+			case consensus.UpdateShutdown:
 				return nil
-			case consensus.NotificationBlockNew:
+			case consensus.UpdateBlockNew:
 				self.HandleBlockNew(notification.Block)
-			case consensus.NotificationBlockValid:
+			case consensus.UpdateBlockValid:
 				self.HandleBlockValid(notification.BlockId)
-			case consensus.NotificationBlockCommit:
+			case consensus.UpdateBlockCommit:
 				self.HandleBlockCommit(notification.BlockId)
-			case consensus.NotificationPeerMessage:
+			case consensus.UpdatePeerMessage:
 				self.HandlePeerMessage(notification.PeerMessage, notification.SenderId)
 			}
 		case <-time.After(time.Millisecond * 10):
