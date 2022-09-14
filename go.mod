@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/brianolson/cbor_go v1.0.0
-	github.com/btcsuite/btcd v0.21.0-beta
+	github.com/btcsuite/btcd v0.22.1
 	github.com/golang/mock v1.5.0
 	github.com/golang/protobuf v1.4.3
 	github.com/jessevdk/go-flags v1.4.0
