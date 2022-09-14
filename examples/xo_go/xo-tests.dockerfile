@@ -18,9 +18,9 @@ FROM ubuntu:bionic
 RUN apt-get update \
  && apt-get install gnupg -y
 
-RUN echo "deb http://repo.sawtooth.me/ubuntu/nightly bionic universe" >> /etc/apt/sources.list \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 44FC67F19B2466EA \
- && apt-get update
+RUN echo "deb http://repo.sawtooth.me/ubuntu/nightly bionic universe" >> /etc/apt/sources.list
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 44FC67F19B2466EA
+RUN apt-get update
 
 RUN apt-get install -y -q \
     python3-sawtooth-cli \
