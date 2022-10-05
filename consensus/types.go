@@ -47,6 +47,11 @@ func NewBlockIdFromBytes(blockIdBytes []byte) BlockId {
 	return BlockId(blockIdBytes)
 }
 
+func NewBlockIdFromString(blockIdString string) BlockId {
+	blockIdBytes, _ := hex.DecodeString(blockIdString)
+	return NewBlockIdFromBytes(blockIdBytes)
+}
+
 // A PeerId is an identifier for a peer.
 type PeerId string
 
