@@ -1,4 +1,4 @@
-module github.com/sloganking/sawtooth-devmode-go
+module github.com/hyperledger/sawtooth-devmode-go/examples/devmode_consensus
 
 go 1.16
 
