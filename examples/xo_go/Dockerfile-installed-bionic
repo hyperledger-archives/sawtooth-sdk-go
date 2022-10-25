@@ -34,38 +34,30 @@ RUN echo "deb [arch=amd64] http://repo.sawtooth.me/ubuntu/ci bionic universe" >>
  && apt-get update \
  && apt-get install -y -q \
     build-essential \
-    golang-1.13-go \
     git \
     libssl-dev \
     libzmq3-dev \
     openssl \
     python3-grpcio-tools \
+    wget \
+    pkg-config \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
+RUN wget https://go.dev/dl/go1.16.15.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.16.15.linux-amd64.tar.gz
+
 ENV GOPATH=/go:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/xo_go
 
-ENV PATH=$PATH:/project/bin:/go/bin:/usr/lib/go-1.13/bin
+ENV PATH=$PATH:/project/bin:/go/bin:/usr/local/go/bin:/usr/bin
 
 RUN mkdir /go
-
-RUN go get -u \
-    github.com/golang/protobuf/proto \
-    github.com/golang/protobuf/protoc-gen-go \
-    github.com/pebbe/zmq4 \
-    github.com/brianolson/cbor_go \
-    github.com/satori/go.uuid \
-    github.com/btcsuite/btcd/btcec \
-    github.com/jessevdk/go-flags \
-    github.com/pelletier/go-toml \
-    github.com/golang/mock/gomock \
-    github.com/golang/mock/mockgen \
-    golang.org/x/crypto/ripemd160 \
-    golang.org/x/crypto/ssh
 
 COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 
 WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go
+
+RUN go mod download
 
 RUN cd examples/xo_go \
  && if [ -d "bin" ]; then rm -rf bin; fi \

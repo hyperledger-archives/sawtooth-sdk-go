@@ -295,7 +295,7 @@ func receiveValidator(ids map[string]string, validator, workers messaging.Connec
 		err = workers.SendData(workerId, data)
 		if err != nil {
 			logger.Errorf(
-				"Failed to send response with correlationd id %v to worker %v: %v",
+				"Failed to send response with correlation id %v to worker %v: %v",
 				corrId, workerId, err,
 			)
 			return

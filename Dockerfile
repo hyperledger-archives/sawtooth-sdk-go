@@ -40,7 +40,6 @@ RUN echo "deb http://repo.sawtooth.me/ubuntu/ci bionic universe" >> /etc/apt/sou
  || apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 308C15A29AD198E9) \
  && apt-get update \
  && apt-get install -y -q \
-    golang-1.13-go \
     git \
     libssl-dev \
     libzmq3-dev \
@@ -49,27 +48,26 @@ RUN echo "deb http://repo.sawtooth.me/ubuntu/ci bionic universe" >> /etc/apt/sou
     python3 \
     python3-pip \
     python3-pkg-resources \
+    wget \
+    pkg-config \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
+RUN wget https://go.dev/dl/go1.16.15.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.16.15.linux-amd64.tar.gz
+
 RUN pip3 install grpcio grpcio-tools
+
 ENV GOPATH=/go:/project/:/go/src/github.com/hyperledger/sawtooth-sdk-go:/go/src/github.com/hyperledger/sawtooth-sdk-go/examples/smallbank/smallbank_go/:/go/src/github.com/hyperledger/sawtooth-sdk-go/protobuf
 
-ENV PATH=$PATH:/go/bin:/usr/lib/go-1.13/bin
+ENV PATH=$PATH:/go/bin:/usr/local/go/bin
 
 RUN mkdir /go
 
-RUN go get -u \
-    github.com/btcsuite/btcd/btcec \
-    github.com/golang/protobuf/proto \
-    github.com/golang/protobuf/protoc-gen-go \
-    github.com/golang/mock/gomock \
-    github.com/golang/mock/mockgen \
-    github.com/pebbe/zmq4 \
-    github.com/satori/go.uuid
-
-RUN mkdir -p /go/src/github.com/hyperledger/sawtooth-sdk-go
+COPY . /go/src/github.com/hyperledger/sawtooth-sdk-go
 
 WORKDIR /go/src/github.com/hyperledger/sawtooth-sdk-go/
+
+RUN go mod download
 
 CMD go generate
